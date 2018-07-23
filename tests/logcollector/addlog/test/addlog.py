@@ -1,7 +1,7 @@
 # test1AddLog.py
 def test_AddLogAgent():
         f = open('/var/ossec/logs/ossec.log', 'r')
-        assert "addlog.log" in f.read()
+        assert "ssh.log" in f.read()
 
 def test_AlertInManager():
         f = open('/var/ossec/logs/alerts/alerts.log', 'r')
