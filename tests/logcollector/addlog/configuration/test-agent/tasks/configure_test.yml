@@ -9,7 +9,7 @@
   with_items:
     - { src: ../requiredfiles/ssh.log, dest: /var/ossec/logs/ssh.log }
     - { src: ../requiredfiles/ssh.log, dest: "{{ testdir }}/ssh.log" }
-    - { src: ../test/addLog.py, dest: "{{ testdir }}/addlog.py" }
+    - { src: ../test/addlog.py, dest: "{{ testdir }}/addlog.py" }
     - { src: ../requiredfiles/addlog.conf, dest: "{{ testdir }}/addlog.conf" }
 
 - name: Append conf to ossec.conf
