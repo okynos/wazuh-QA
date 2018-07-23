@@ -64,7 +64,7 @@ for manager in managers:
 
 inventory += "\n[all:vars]\n"
 inventory += "ansible_user=root\n"
-inventory += "ansible_ssh_private_key_file=./id_rsa_tmp\n"
+inventory += "ansible_ssh_private_key_file=tmp/id_rsa_tmp\n"
 inventory += "ansible_ssh_common_args='-o StrictHostKeyChecking=no'\n"
 inventory += "ansible_ssh_pass=root\n"
 
