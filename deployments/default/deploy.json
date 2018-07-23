@@ -1,0 +1,12 @@
+[
+  {
+    "type": "manager",
+    "system": "Centos",
+    "quantity": "1"
+  },
+  {
+    "type": "agent",
+    "system": "Ubuntu",
+    "quantity": "2"
+  }
+]

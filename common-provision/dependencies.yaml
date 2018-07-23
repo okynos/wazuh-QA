@@ -1,0 +1,22 @@
+---
+- hosts: all
+  tasks:
+  - name: install Docker
+    package:
+      name: docker.io
+      state: present
+
+  - name: install pip
+    package:
+      name: python-pip
+      state: present
+
+  - name: install docker for python
+    pip:
+      name: docker
+      state: present
+
+  - name: start Docker service
+    service:
+      name: docker
+      state: started

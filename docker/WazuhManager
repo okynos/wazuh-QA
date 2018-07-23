@@ -1,0 +1,36 @@
+# Wazuh App Copyright (C) 2018 Wazuh Inc. (License GPLv2)
+FROM phusion/baseimage:latest
+ARG WAZUH_VERSION=3.3.1-1
+
+RUN echo 'root:root' | chpasswd
+
+# Updating image
+RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
+
+# Set Wazuh repository.
+RUN echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee /etc/apt/sources.list.d/wazuh.list
+RUN curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
+
+
+# Creating ossec user as uid:gid 1000:1000
+RUN groupadd -g 1000 ossec
+RUN useradd -u 1000 -g 1000 ossec
+
+# Install packages
+RUN apt-get update && apt-get -y install openssl \
+    apt-transport-https python wazuh-manager=${WAZUH_VERSION}
+
+
+# Services ports
+EXPOSE 1514/udp 1515/tcp 22/tcp
+
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Launch services
+RUN sed -i 's/PermitRootLogin prohibit-password//' /etc/ssh/sshd_config
+RUN bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
+RUN ssh-keygen -A
+CMD ["/usr/sbin/sshd", "-D"]
+
+

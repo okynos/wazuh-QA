@@ -1,0 +1,12 @@
+---
+- hosts: all
+  vars:
+    template:
+      name: "{{ inventory_hostname }}"
+
+  tasks:
+  - name: Stop containers
+    command: "docker stop {{ template.name }}"
+
+  - name: Remove containers
+    command: "docker rm {{ template.name }}"

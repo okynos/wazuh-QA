@@ -1,0 +1,44 @@
+---
+# Configure Wazuh-manager
+- hosts: Managers
+  tasks:
+  - name: Starting authd
+    command: "/var/ossec/bin/ossec-authd"
+
+  - name: Starting wazuh-manager service
+    service:
+      name: wazuh-manager
+      state: started
+
+
+
+# Configure wazuh-agent
+- hosts: Agents
+  vars:
+    managerName: "{{ groups.Managers[0] }}"
+    template:
+      name: "{{ managerName }}"
+      commPort: "{{ hostvars[managerName].comm_port }}"
+      authPort: "{{ hostvars[managerName].auth_port }}"
+      ip: "{{ hostvars[managerName].ansible_host }}"
+
+  tasks:
+  - name: Setting manager IP in agent
+    lineinfile:
+      path: /var/ossec/etc/ossec.conf
+      regexp: "      <address>MANAGER_IP</address>"
+      line: "      <address>{{ template.ip }}</address>"
+
+  - name: Setting manager port in agent
+    lineinfile:
+      path: /var/ossec/etc/ossec.conf
+      regexp: "      <port>1514</port>"
+      line: "      <port>{{ template.commPort }}</port>"
+
+  - name: Starting authd in agent
+    command: "/var/ossec/bin/agent-auth -m {{ template.ip }} -p {{ template.authPort }}"
+
+  - name: Starting wazuh-agent service
+    service:
+      name: wazuh-agent
+      state: started

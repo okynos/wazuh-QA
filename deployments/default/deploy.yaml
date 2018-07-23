@@ -1,0 +1,37 @@
+---
+# Instance Manager containers
+- hosts: Managers
+  vars:
+    template:
+      name: "{{ inventory_hostname }}"
+      port: "{{ hostvars[inventory_hostname].ssh_port }}"
+      commPort: "{{ hostvars[inventory_hostname].comm_port }}"
+      authPort: "{{ hostvars[inventory_hostname].auth_port }}"
+      ip: "{{ hostvars[inventory_hostname].ansible_host }}"
+
+  tasks:
+  - name: start managers containers
+    docker_container:
+      name: "{{ template.name }}"
+      image: okynos/wazuh-manager
+      ports:
+        - "{{ template.port }}:22"
+        - "{{ template.commPort }}:1514/udp"
+        - "{{ template.authPort }}:1515"
+
+# Instance agent containers
+- hosts: Agents
+  vars:
+    template:
+      name: "{{ inventory_hostname }}"
+      port: "{{ hostvars[inventory_hostname].ssh_port }}"
+      ip: "{{ hostvars[inventory_hostname].ansible_host }}"
+
+  tasks:
+  - name: Start agents containers
+    docker_container:
+      name: "{{ template.name }}"
+      image: okynos/wazuh-agent
+      pull: yes
+      ports:
+        - "{{ template.port }}:22"
