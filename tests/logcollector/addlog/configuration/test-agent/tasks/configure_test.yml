@@ -1,0 +1,32 @@
+---
+- name: Make new dir to store test
+  file: path="{{ testdir }}" state=directory
+
+- name: Copy all files to "{{ inventory_host }}"
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: ../requiredfiles/ssh.log, dest: /var/ossec/logs/ssh.log }
+    - { src: ../requiredfiles/ssh.log, dest: "{{ testdir }}/ssh.log" }
+    - { src: ../test/addLog.py, dest: "{{ testdir }}/addlog.py" }
+    - { src: ../requiredfiles/addlog.conf, dest: "{{ testdir }}/addlog.conf" }
+
+- name: Append conf to ossec.conf
+  shell: cat "{{ testdir }}/addlog.conf" >> /var/ossec/etc/ossec.conf
+
+- name: Restarting agent
+  service:
+    name: wazuh-agent
+    state: restarted
+
+- name: Waiting for restart
+  pause:
+    seconds: 10
+
+- name: Writing alert to log
+  shell: cat "{{ testdir }}/ssh.log" >> /var/ossec/logs/ssh.log
+
+- name: Running Test
+  command: pytest "{{ testdir }}/addlog.py::test_AddLogAgent"
+    

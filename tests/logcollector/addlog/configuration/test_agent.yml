@@ -1,0 +1,9 @@
+---
+- hosts: Agents
+  roles:
+    - test-agent
+  vars:
+    testdir: /addlog
+    wazuh_managers:
+      - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
+

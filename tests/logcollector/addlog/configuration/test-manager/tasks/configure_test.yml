@@ -1,0 +1,21 @@
+---
+- name: Make new dir to store test
+  file: path="{{ testdir }}" state=directory
+
+- name: Copy all files to "{{ inventory_host }}"
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: ../requiredfiles/addlog.py, dest: "{{ testdir }}/addlog.py" }
+    - { src: ../requiredfiles/ssh.log, dest: "{{ testdir }}/ssh.log" }
+
+- name: Waiting to get Log from Agents
+  pause:
+    seconds: 10
+
+- name: Writing alert to log
+  shell: cat "{{ testdir }}/addlog.log" >> /var/ossec/logs/addlog.log
+
+- name: Running Test
+  command: pytest "{{ testdir }}/addlog.py::test_AlertInManager"
