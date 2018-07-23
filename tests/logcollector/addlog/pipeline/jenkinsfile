@@ -3,10 +3,10 @@
 node("ansible"){
   stage("STAGE 0 - Setting environment"){
     git branch: 'master', url: 'https://github.com/okynos/wazuh-QA.git'
-    sh "mkdir tmp"
+    sh "mkdir -p tmp"
     sh "python tools/generateJSON.py deployments/structure.json deployments/default/deploy.json > tmp/standard_deploy.json"
-    sh "python tools/generateInventory.py deploy tmp/standarddeploy.json > tmp/hosts_deploy"
-    sh "python tools/generateInventory.py config tmp/standarddeploy.json > tmp/hosts_config"
+    sh "python tools/generateInventory.py deploy tmp/standard_deploy.json > tmp/hosts_deploy"
+    sh "python tools/generateInventory.py config tmp/standard_deploy.json > tmp/hosts_config"
   }
 
   stage("STAGE 1 - Deploy"){
