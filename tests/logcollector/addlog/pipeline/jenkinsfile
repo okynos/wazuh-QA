@@ -2,7 +2,7 @@
 
 node("ansible"){
   stage("STAGE 0 - Setting environment"){
-    //git branch: 'master', url: 'https://github.com/okynos/wazuh-cicd.git'
+    git branch: 'master', url: 'https://github.com/okynos/wazuh-QA.git'
     sh "mkdir tmp"
     sh "python tools/generateJSON.py deployments/structure.json deployments/default/deploy.json > tmp/standard_deploy.json"
     sh "python tools/generateInventory.py deploy tmp/standarddeploy.json > tmp/hosts_deploy"
