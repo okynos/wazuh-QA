@@ -1,0 +1,51 @@
+---
+######################### Common #######################################
+
+# Configure repos for all servers
+- hosts: all
+  tasks: 
+  - name: Set YUM wazuh repo
+    yum_repository:
+      name: wazuh
+      description: Wazuh packages repository
+      baseurl: https://packages.wazuh.com/3.x/yum/
+      gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+      gpgcheck: yes
+      protect: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Set APT wazuh repo
+    apt_repository:
+      repo: deb https://packages.wazuh.com/3.x/apt/ stable main
+      state: present
+    when: ansible_distribution == "Debian"
+
+  - name: Add APT key wazuh repo
+    apt_key:
+      url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+      state: present
+    when: ansible_distribution == "Debian"
+
+
+######################### Managers #######################################
+
+# Configure Wazuh-manager
+- hosts: Managers
+  tasks:
+  - name: Installing wazuh-manager
+    package:
+      name: "wazuh-manager={{ wazuh_version }}"
+      state: present
+
+
+
+######################### Agents #######################################
+
+# Configure wazuh-agent
+- hosts: Agents
+  tasks:
+  - name: Installing wazuh-agent
+    package:
+      name: "wazuh-agent={{ wazuh_version }}"
+      state: present
+

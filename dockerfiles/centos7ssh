@@ -1,0 +1,22 @@
+FROM centos:7.5.1804
+
+# Setting root password
+RUN echo 'root:root' | chpasswd
+
+# Update image
+RUN yum update -y && yum install -y openssl openssh openssh-server openssh-clients epel-release
+RUN yum update -y && yum install -y python-pip
+RUN pip install pytest
+
+# Configure SSHD
+RUN mkdir /var/run/sshd
+RUN sed -i 's/#PermitRootLogin/PermitRootLogin/' /etc/ssh/sshd_config
+RUN ssh-keygen -A
+
+# Services ports
+EXPOSE 22/tcp
+
+# Launch services
+CMD ["/usr/sbin/sshd", "-D"]
+
+

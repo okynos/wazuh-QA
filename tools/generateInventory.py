@@ -27,12 +27,14 @@ for element in json_data:
   ssh_port = element['sshport']
   ip = element['ip']
   name = element['name']
+  image = element['docker_image']
   obj = {}
   obj['system'] = dsystem
   obj['type'] = dtype
   obj['sshport'] = ssh_port
   obj['ip'] = ip
   obj['name'] = name
+  obj['docker_image'] = image
 
   if dtype == "agent":
     agents.append(obj.copy())
@@ -47,6 +49,7 @@ inventory += "[Agents]\n"
 for agent in agents:
   inventory += agent['name'] + " ansible_host=" + agent['ip']
   if goal == "deploy":
+    inventory += " docker_image=" + agent['docker_image']
     inventory += " ssh_port=" + str(agent['sshport'])  + "\n"
   elif goal == "config":
     inventory += " ansible_ssh_port=" + str(agent['sshport'])  + "\n"
@@ -58,6 +61,7 @@ for manager in managers:
   inventory += " comm_port=" + str(manager['commport'])
   inventory += " auth_port=" + str(manager['authport'])
   if goal == "deploy":
+    inventory += " docker_image=" + manager['docker_image']
     inventory += " ssh_port=" + str(manager['sshport']) + "\n"
   elif goal == "config":
     inventory += " ansible_ssh_port=" + str(manager['sshport']) + "\n"

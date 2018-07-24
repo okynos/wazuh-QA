@@ -1,4 +1,6 @@
 ---
+######################### Managers #######################################
+
 # Configure Wazuh-manager
 - hosts: Managers
   tasks:
@@ -11,6 +13,7 @@
       state: started
 
 
+######################### Agents #######################################
 
 # Configure wazuh-agent
 - hosts: Agents

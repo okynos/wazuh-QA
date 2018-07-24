@@ -45,6 +45,7 @@ for element in deploy_data:
   obj['type'] = dtype
   obj['system'] = dsystem
   obj['ip'] = infrastructure[dsystem]
+  obj['docker_image'] = element['docker_image']
 
   if dtype == "agent":
     for e in range(quantity):

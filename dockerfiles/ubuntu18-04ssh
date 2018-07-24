@@ -1,0 +1,24 @@
+FROM ubuntu:18.04
+
+# Setting root password
+RUN echo 'root:root' | chpasswd
+
+# Update image and install ssh
+RUN apt-get update && apt-get -y install openssl python-pip \
+    apt-transport-https openssh-server python
+RUN pip install pytest
+
+# Clean up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Configure SSHD
+RUN mkdir /var/run/sshd
+RUN sed -i 's/PermitRootLogin prohibit-password//' /etc/ssh/sshd_config && \
+    bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
+RUN ssh-keygen -A
+
+# Services ports
+EXPOSE 22/tcp
+
+# Launch services
+CMD ["/usr/sbin/sshd", "-D"]
