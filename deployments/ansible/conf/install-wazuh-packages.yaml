@@ -20,12 +20,12 @@
       state: present
     when: ansible_os_family == "Debian"
 
-  - name: Add APT key wazuh repo
-    apt_key:
-      id: 96B3EE5F29111145
-      url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
-      state: present
-    when: ansible_os_family == "Debian"
+#  - name: Add APT key wazuh repo
+#    apt_key:
+#      id: 96B3EE5F29111145
+#      url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+#      state: present
+#    when: ansible_os_family == "Debian"
 
 
 ######################### Managers #######################################

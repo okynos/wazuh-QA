@@ -1,16 +1,20 @@
 // Configuration
-def tmp_path = "tmp"
 def deploy_path = "deployments/ansible"
-def common = "common"
+def deploy_conf = "$deploy_path/default.json"
+def test_route = "tests/logcollector/01-addlog/test/conf"
+def environment = "environments/env-docker"
+def env_file = "$environment/environment.json"
+
+// Pipeline configuration
+def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
+def jenkins_branch = "master"
+def keys_path = "/home/okynos/jenkins/keys"
+
+// Temporal output
+def tmp_path = "tmp"
 def hosts_deploy = "$tmp_path/hosts_deploy"
 def hosts_config = "$tmp_path/hosts_config"
 def selected_deploy = "$tmp_path/selected_deploy.json"
-def infrastructure = "$deploy_path/conf/structure.json"
-def deploy_conf = "$deploy_path/default.json"
-def test_route = "tests/logcollector/01-addlog/test/conf"
-def keys_path = "/home/okynos/jenkins/keys"
-def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
-def jenkins_branch = "master"
 
 // Parameters from Jenkins
 def version = params.wazuh_version
@@ -30,8 +34,8 @@ node("ansible"){
 
   stage("STAGE 1 - Deploy"){
     sh "ansible-playbook -i $hosts_deploy $deploy_path/conf/deploy.yaml"
-    sh "ansible-playbook -i $hosts_config $common/install-wazuh-packages.yaml --extra-vars 'wazuh_version=$version'"
-    sh "ansible-playbook -i $hosts_config $deploy_path/conf/conf-wazuh.yaml"
+    sh "ansible-playbook -i $hosts_config $deploy_path/conf/install-wazuh-packages.yaml --extra-vars 'wazuh_version=$version'"
+    sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh-register.yaml"
   }
 
   stage("STAGE 2 - Test 01 - Add log to logcollector"){ 
