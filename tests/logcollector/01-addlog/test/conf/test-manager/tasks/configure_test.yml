@@ -7,8 +7,8 @@
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}"
   with_items:
-    - { src: ../test/addlog.py, dest: "{{ testdir }}/addlog.py" }
-    - { src: ../requiredfiles/ssh.log, dest: "{{ testdir }}/ssh.log" }
+    - { src: ../../test/addlog.py, dest: "{{ testdir }}/addlog.py" }
+    - { src: ../../requiredfiles/ssh.log, dest: "{{ testdir }}/ssh.log" }
 
 - name: Waiting to get Log from Agents
   pause:
