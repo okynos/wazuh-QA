@@ -22,6 +22,7 @@ node("ansible"){
     git branch: "$jenkins_branch", url: "$jenkins_repo"
     sh "mkdir -p $tmp_path"
     sh "cp $keys_path/* $tmp_path/"
+    sh "chmod 0400 $tmp_path/id_rsa*"
     sh "python tools/generateJSON.py $infrastructure $deploy_conf > $selected_deploy"
     sh "python tools/generateInventory.py deploy $selected_deploy > $hosts_deploy"
     sh "python tools/generateInventory.py config $selected_deploy > $hosts_config"

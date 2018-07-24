@@ -22,6 +22,7 @@
 
   - name: Add APT key wazuh repo
     apt_key:
+      id: 96B3EE5F29111145
       url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
       state: present
     when: ansible_os_family == "Debian"
@@ -34,7 +35,7 @@
   tasks:
   - name: Installing wazuh-manager
     package:
-      name: "wazuh-manager={{ wazuh_version }}"
+      name: "wazuh-manager-{{ wazuh_version }}"
       state: present
 
 
@@ -46,6 +47,6 @@
   tasks:
   - name: Installing wazuh-agent
     package:
-      name: "wazuh-agent={{ wazuh_version }}"
+      name: "wazuh-agent-{{ wazuh_version }}"
       state: present
 
