@@ -1,4 +1,4 @@
-# Configuration
+// Configuration
 def tmp_path = "tmp"
 def deploy_path = "deployments/ansible"
 def common = "common"
@@ -12,7 +12,7 @@ def keys_path = "/root/keys"
 def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
 def jenkins_branch = "master"
 
-# Parameters from Jenkins
+// Parameters from Jenkins
 def version = global.determine_os(params.wazuh-version)
 def branch = global.determine_os(params.branch)
 def installation = global.determine_os(params.installation)
