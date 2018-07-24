@@ -14,18 +14,18 @@
       protect: yes
     when: ansible_os_family == "RedHat"
 
+  - name: Add APT key wazuh repo
+    apt_key:
+      id: 96B3EE5F29111145
+      url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+      state: present
+    when: ansible_os_family == "Debian"
+
   - name: Set APT wazuh repo
     apt_repository:
       repo: deb https://packages.wazuh.com/3.x/apt/ stable main
       state: present
     when: ansible_os_family == "Debian"
-
-#  - name: Add APT key wazuh repo
-#    apt_key:
-#      id: 96B3EE5F29111145
-#      url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
-#      state: present
-#    when: ansible_os_family == "Debian"
 
 
 ######################### Managers #######################################
@@ -33,10 +33,17 @@
 # Configure Wazuh-manager
 - hosts: Managers
   tasks:
-  - name: Installing wazuh-manager
+  - name: Installing wazuh-manager YUM
     package:
       name: "wazuh-manager-{{ wazuh_version }}"
       state: present
+  when: ansible_os_family == "RedHat"
+
+  - name: Installing wazuh-manager APT
+    package:
+      name: "wazuh-manager={{ wazuh_version }}-1"
+      state: present
+  when: ansible_os_family == "Debian"
 
 
 
@@ -45,8 +52,15 @@
 # Configure wazuh-agent
 - hosts: Agents
   tasks:
-  - name: Installing wazuh-agent
+  - name: Installing wazuh-agent YUM
     package:
       name: "wazuh-agent-{{ wazuh_version }}"
       state: present
+    when: ansible_os_family == "RedHat"
+
+  - name: Installing wazuh-agent APT
+    package:
+      name: "wazuh-agent={{ wazuh_version }}-1"
+      state: present
+    when: ansible_os_family == "Debian"
 
