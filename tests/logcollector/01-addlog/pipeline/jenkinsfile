@@ -1,6 +1,7 @@
 # Configuration
 def tmp_path = "tmp"
 def deploy_path = "deployments/ansible"
+def common = "common"
 def hosts_deploy = "$tmp_path/hosts_deploy"
 def hosts_config = "$tmp_path/hosts_config"
 def selected_deploy = "$tmp_path/selected_deploy.json"
@@ -17,7 +18,7 @@ def branch = global.determine_os(params.branch)
 def installation = global.determine_os(params.installation)
 
 node("ansible"){
-  stage("STAGE 0 - Setting environment"){
+  stage("STAGE 0 - Initializing environment"){
     git branch: "$jenkins_branch", url: "$jenkins_repo"
     sh "mkdir -p $tmp_path"
     sh "cp $keys_path/* $tmp_path/"
@@ -28,11 +29,11 @@ node("ansible"){
 
   stage("STAGE 1 - Deploy"){
     sh "ansible-playbook -i $hosts_deploy $deploy_path/conf/deploy.yaml"
-    sh "ansible-playbook -i $hosts_config $deploy_path/conf/conf-wazuh.yaml --extra-vars 'wazuh_version=$version'"
+    sh "ansible-playbook -i $hosts_config $common/install-wazuh-packages.yaml --extra-vars 'wazuh_version=$version'"
+    sh "ansible-playbook -i $hosts_config $deploy_path/conf/conf-wazuh.yaml"
   }
 
-  stage("STAGE 2 - Test"){
-    
+  stage("STAGE 2 - Test 01 - Add log to logcollector"){ 
     sh "ansible-playbook -i $hosts_config $test_route/test_agent.yml"
     sh "ansible-playbook -i $hosts_config $tests_route/test_manager.yml"
   }
