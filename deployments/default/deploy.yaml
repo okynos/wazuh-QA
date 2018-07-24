@@ -14,6 +14,7 @@
     docker_container:
       name: "{{ template.name }}"
       image: okynos/wazuh-manager
+      pull: yes
       ports:
         - "{{ template.port }}:22"
         - "{{ template.commPort }}:1514/udp"

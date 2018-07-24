@@ -11,15 +11,14 @@ RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 RUN echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee /etc/apt/sources.list.d/wazuh.list
 RUN curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
 
-
 # Creating ossec user as uid:gid 1000:1000
 RUN groupadd -g 1000 ossec
 RUN useradd -u 1000 -g 1000 ossec
 
 # Install packages
-RUN apt-get update && apt-get -y install openssl \
+RUN apt-get update && apt-get -y install openssl python-pip \
     apt-transport-https openssh-server python wazuh-agent=${WAZUH_VERSION}
-
+RUN pip install pytest
 
 # Services ports
 EXPOSE 22/tcp
