@@ -12,19 +12,19 @@
       gpgkey: https://packages.wazuh.com/key/GPG-KEY-WAZUH
       gpgcheck: yes
       protect: yes
-    when: ansible_distribution == "CentOS"
+    when: ansible_os_family == "RedHat"
 
   - name: Set APT wazuh repo
     apt_repository:
       repo: deb https://packages.wazuh.com/3.x/apt/ stable main
       state: present
-    when: ansible_distribution == "Debian"
+    when: ansible_os_family == "Debian"
 
   - name: Add APT key wazuh repo
     apt_key:
       url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
       state: present
-    when: ansible_distribution == "Debian"
+    when: ansible_os_family == "Debian"
 
 
 ######################### Managers #######################################

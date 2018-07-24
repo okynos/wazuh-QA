@@ -8,14 +8,14 @@ def selected_deploy = "$tmp_path/selected_deploy.json"
 def infrastructure = "$deploy_path/conf/structure.json"
 def deploy_conf = "$deploy_path/default.json"
 def test_route = "tests/logcollector/01-addlog/test/conf"
-def keys_path = "/root/keys"
+def keys_path = "/home/okynos/jenkins/keys"
 def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
 def jenkins_branch = "master"
 
 // Parameters from Jenkins
-def version = global.determine_os(params.wazuh-version)
-def branch = global.determine_os(params.branch)
-def installation = global.determine_os(params.installation)
+def version = params.wazuh_version
+def branch = params.branch
+def installation = params.installation
 
 node("ansible"){
   stage("STAGE 0 - Initializing environment"){
