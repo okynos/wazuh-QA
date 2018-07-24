@@ -41,7 +41,7 @@ node("ansible"){
 
   stage("STAGE 2 - Test 01 - Add log to logcollector"){ 
     sh "ansible-playbook -i $hosts_config $test_route/test_agent.yml"
-    sh "ansible-playbook -i $hosts_config $tests_route/test_manager.yml"
+    sh "ansible-playbook -i $hosts_config $test_route/test_manager.yml"
   }
 
   stage("STAGE X - Destroy"){
