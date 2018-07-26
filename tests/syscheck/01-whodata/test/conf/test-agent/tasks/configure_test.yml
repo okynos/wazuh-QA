@@ -23,5 +23,5 @@
     seconds: 20
 
 - name: Running whodata alert generation
-  command: nohup python "{{ test_dir }}/{{ test_name }}_generator.py" 20 &
+  command: nohup python "{{ test_dir }}/{{ test_name }}_generator.py" "{{ test_dir }}/{{ test_name }}.txt" 20 &
     
