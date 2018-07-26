@@ -1,0 +1,27 @@
+---
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ local_test_dir }}/{{ test_name }}_generator.py", dest: "{{ test_dir }}/{{ test_name }}_generator.py" }
+    - { src: "{{ required_files }}/{{ test_name }}.conf", dest: "{{ test_dir }}/{{ test_name }}.conf" }
+
+- name: Append conf to ossec.conf
+  shell: cat "{{ test_dir }}/{{ test_name }}.conf" >> /var/ossec/etc/ossec.conf
+
+- name: Restarting agent
+  service:
+    name: wazuh-agent
+    state: restarted
+
+- name: Waiting to restart
+  pause:
+    seconds: 20
+
+- name: Running whodata alert generation
+  command: nohup python "{{ test_dir }}/{{ test_name }}_generator.py 20 &"
+    

@@ -1,0 +1,17 @@
+---
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "../../test/{{ test_name }}_test.py", dest: "{{ test_dir }}/{{ test_name }}_test.py" }
+
+- name: Waiting to get Log from Agents
+  pause:
+    seconds: 10
+
+- name: Running watchdog
+  command: python "{{ test_dir }}/{{ test_name }}_test.py"

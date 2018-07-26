@@ -1,0 +1,12 @@
+---
+- hosts: Agents
+  roles:
+    - test-agent
+  vars:
+    test_name: whodata
+    test_dir: "/{{ test_name }}"
+    required_files: ../../requiredfiles
+    local_test_dir: ../../test
+    wazuh_managers:
+      - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
+
