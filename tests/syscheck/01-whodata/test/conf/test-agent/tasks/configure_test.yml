@@ -1,4 +1,9 @@
 ---
+- name: Clean previous tests
+  file:
+    state: absent
+    path: "{{ test_dir }}/"
+
 - name: Make new dir to store test
   file: path="{{ test_dir }}" state=directory
 

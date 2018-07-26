@@ -1,4 +1,9 @@
 ---
+- name: Clean previous tests
+  file:
+    state: absent
+    path: "{{ test_dir }}/"
+
 - name: Make new dir to store test
   file: path="{{ test_dir }}" state=directory
 
@@ -14,4 +19,4 @@
     seconds: 10
 
 - name: Running watchdog
-  command: python "{{ test_dir }}/{{ test_name }}_test.py"
+  command: python "{{ test_dir }}/{{ test_name }}_test.py" /var/ossec/logs/alerts/alerts.json "{{ test_dir }}/test_output.txt"

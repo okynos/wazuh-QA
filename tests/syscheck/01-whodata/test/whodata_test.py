@@ -4,57 +4,70 @@ import sys
 import time
 import json
 
-example = '{"login_user": {"id": "1000", "name": "vagrant"}, "group": {"id": "0", "name": "root"}, "user": {"id": "0", "name": "root"}, "proccess": {"ppid": "8698", "id": "10554", "name": "/usr/bin/nano"}, "effective_user": {"id": "0", "name": "root"}}'
+test_filepath = "/whodata/whodata.txt"
+test_eventtype = "modified"
 
-class Watcher(object):
-    running = True
-    refresh_delay_secs = 1
+json_file = sys.argv[1]
+result_file = sys.argv[2]
+run_time = int(sys.argv[3])
+num_agents = int(sys.argv[4])
 
-    # Constructor
-    def __init__(self, watch_file, call_func_on_change=None, *args, **kwargs):
-        self._cached_stamp = 0
-        self.filename = watch_file
-        self.call_func_on_change = call_func_on_change
-        self.args = args
-        self.ctr = 0
-        self.kwargs = kwargs
+total_ctr = 0
+audit_ctr = 0
 
-    # Look for changes
-    def look(self):
-        stamp = os.stat(self.filename).st_mtime
-        if stamp != self._cached_stamp:
-            self._cached_stamp = stamp
-            # File has changed, so do something...
-            if self.call_func_on_change is not None:
-                self.ctr += 1
-                f_read = open(self.filename, "r")
-                last_line = f_read.readlines()[-1]
-                f_read.close()
-                self.call_func_on_change(last_line, **self.kwargs)
+agents = []
 
-    # Keep watching in a loop        
-    def watch(self):
-        while self.running: 
-            try: 
-                # Look for changes
-                time.sleep(self.refresh_delay_secs) 
-                self.look() 
-            except KeyboardInterrupt: 
-                print('\nDone') 
-                break 
-            except IOError:
-                # Action on file not found
-                pass
-            except: 
-                print('Unhandled error: %s' % sys.exc_info()[0])
+for i in range(num_agents+4):
+  obj = {}
+  obj['alerts_generated'] = 0
+  obj['alerts_whodata'] = 0
+  obj['id'] = 0
+  obj['name'] = ""
+  agents.append(obj.copy())
 
-# Call this function each time a change happens
-def custom_action(text):
-    data = json.loads(text)
-    print json.dumps(data['syscheck']['audit'])
+with open(json_file) as input_file:
+  for line in input_file:
+    alert = json.loads(line)
+    total_ctr += 1
 
-watch_file = sys.argv[1]
-watcher = Watcher(watch_file, custom_action)  # also call custom action function
-watcher.watch()  # start the watch going
+    if (
+          'syscheck' in alert
+          and 'audit' in alert['syscheck']
+          and 'login_user' in alert['syscheck']['audit']
+          and 'effective_user' in alert['syscheck']['audit']
+          and 'user' in alert['syscheck']['audit']
+          and 'group' in alert['syscheck']['audit']
+        ):
+      if alert['syscheck']['path'] == test_filepath and alert['syscheck']['event'] == test_eventtype:
+        audit_ctr += 1
+        agentid = int(alert['agent']['id'])
+        agents[agentid]['name'] = alert['agent']['name']
+        agents[agentid]['id'] = agentid
+        agents[agentid]['alerts_generated'] += 1
+        agents[agentid]['alerts_whodata'] += 1
+    else:
+      agentid = int(alert['agent']['id'])
+      agents[agentid]['alerts_generated'] += 1
+
+for agent in agents:
+  if agent['id'] == 0:
+    agents.remove(agent)
+
+f = open(result_file, 'w')
+f.write("Total alerts in file: " + str(total_ctr) + "\n")
+f.write("Total audit alerts detected: " + str(audit_ctr) + "\n")
+f.write("Expected audit alerts: " + str(num_agents*run_time) + "\n")
+f.write("Agents registered -> " + json.dumps(agents, indent=2))
+      
+
+
+
+
+
+
+
+
+
+
 
 
