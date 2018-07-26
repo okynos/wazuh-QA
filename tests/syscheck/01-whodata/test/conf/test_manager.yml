@@ -7,5 +7,7 @@
     test_dir: "/{{ test_name }}"
     required_files: ../../requiredfiles
     local_test_dir: ../../test
+    num_agents: 8
+    run_time: 30
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
