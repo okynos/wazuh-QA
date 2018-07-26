@@ -1,4 +1,9 @@
 ---
+- name: Stop wazuh agent to avoid alerts
+  service:
+    name: wazuh-agent
+    state: stopped
+
 - name: Clean previous tests
   file:
     state: absent
