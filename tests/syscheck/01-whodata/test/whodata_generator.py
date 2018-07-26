@@ -3,11 +3,12 @@ import time
 import sys
 
 def generate_whodata_alert():
-  whodata_file = open("whodata.txt", "w")
   limit = int(sys.argv[1])
   for i in range(limit):
+    whodata_file = open("whodata.txt", "w")
     whodata_file.write(str(i))
     print(i)
+    whodata_file.close()
     time.sleep(1)
 
 
