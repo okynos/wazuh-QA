@@ -12,6 +12,11 @@
 - name: Make new dir to store test
   file: path="{{ test_dir }}" state=directory
 
+- name: Create file that will be monitored
+  file: 
+    path: "{{ test_dir }}/{{ test_name }}.txt" 
+    state: touch
+
 - name: Copy all files
   copy:
     src: "{{ item.src }}" 
