@@ -8,6 +8,8 @@
     required_files: ../../requiredfiles
     local_test_dir: ../../test
     run_time: 60
+    interval: 2
+    waiting_time: 30
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
 

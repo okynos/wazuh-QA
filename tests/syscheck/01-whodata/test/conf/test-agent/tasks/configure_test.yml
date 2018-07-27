@@ -35,8 +35,8 @@
 
 - name: Waiting to restart
   pause:
-    seconds: 20
+    seconds: "{{ waiting_time }}"
 
 - name: Running whodata alert generation
-  command: nohup python "{{ test_dir }}/{{ test_name }}_generator.py" "{{ test_dir }}/{{ test_name }}.txt" "{{ run_time }}" &
+  command: nohup python "{{ test_dir }}/{{ test_name }}_generator.py" "{{ test_dir }}/{{ test_name }}.txt" "{{ run_time }}" "{{ interval }}" &
     
