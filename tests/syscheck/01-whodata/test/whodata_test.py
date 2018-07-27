@@ -44,11 +44,11 @@ with open(json_file) as input_file:
         agentid = int(alert['agent']['id'])
         agents[agentid]['name'] = alert['agent']['name']
         agents[agentid]['id'] = agentid
-        agents[agentid]['alerts_generated'] += 1
-        agents[agentid]['alerts_whodata'] += 1
+        agents[agentid]['generated_alerts'] += 1
+        agents[agentid]['whodata_alerts'] += 1
     else:
       agentid = int(alert['agent']['id'])
-      agents[agentid]['alerts_generated'] += 1
+      agents[agentid]['generated_alerts'] += 1
 
 
 f = open(result_file, 'w')

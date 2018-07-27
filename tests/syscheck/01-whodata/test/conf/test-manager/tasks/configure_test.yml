@@ -20,3 +20,9 @@
 
 - name: Running watchdog
   command: python "{{ test_dir }}/{{ test_name }}_test.py" /var/ossec/logs/alerts/alerts.json "{{ test_dir }}/test_output.txt" "{{ run_time }}" "{{ num_agents }}"
+
+- name: Fetch results of test
+  fetch:
+    src: "{{ test_dir }}/test_output.txt"
+    dest: test_output.txt
+  

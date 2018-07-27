@@ -1,6 +1,5 @@
 ---
 - hosts: Agents
-  strategy: free
   roles:
     - test-agent
   vars:
