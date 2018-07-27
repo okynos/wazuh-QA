@@ -1,5 +1,6 @@
 ---
 - hosts: Agents
+  strategy: free
   roles:
     - test-agent
   vars:
@@ -7,7 +8,7 @@
     test_dir: "/{{ test_name }}"
     required_files: ../../requiredfiles
     local_test_dir: ../../test
-    run_time: 30
+    run_time: 60
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
 
