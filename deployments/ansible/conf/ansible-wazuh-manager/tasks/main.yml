@@ -1,0 +1,3 @@
+---
+- import_tasks: "wazuh_manager_sources_installation.yml"
+  when: ansible_system == "Linux"

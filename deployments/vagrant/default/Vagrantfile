@@ -1,0 +1,70 @@
+# Author José Luis Fernández Aguilera
+
+result = []
+num_agents = 1
+agent_initial_id = 2
+agent_hostname_prefix = "TAgent"
+agent_box = "geerlingguy/centos7"
+agent_memory = 512
+agent_cpus = 1
+
+# Boxes config
+num_managers = 1
+manager_box = "geerlingguy/centos7"
+manager_hostname_prefix = "TManager"
+manager_initial_id = 253
+manager_memory = 2048
+manager_cpus = 2
+
+# Generic
+ip_range = "192.168.121."
+provider = "virtualbox"
+
+
+Vagrant.configure("2") do |config|
+  config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
+  config.ssh.insert_key = false
+  config.ssh.username = "vagrant"
+
+
+  # Agents loop instance
+  (agent_initial_id..num_agents+agent_initial_id-1).each do |i|
+    hostname = agent_hostname_prefix + i.to_s
+    config.vm.define hostname do |node| 
+      config.vm.provider provider do |v|
+        v.name = hostname
+        v.memory = agent_memory
+        v.cpus = agent_cpus
+      end
+      node.vm.box = agent_box
+      node.vm.network :private_network, :ip => ip_range + i.to_s
+    end
+    result.push({
+      :ID => i,
+      :IP => ip_range + i.to_s,
+      :hostname => hostname      
+    })
+  end
+
+
+  # Manager instance
+  (manager_initial_id..num_managers+manager_initial_id-1).each do |i|
+    hostname = manager_hostname_prefix + i.to_s
+    config.vm.define hostname do |node| 
+      config.vm.provider provider do |v|
+	      v.name = hostname
+        v.memory = manager_memory
+        v.cpus = manager_cpus
+      end
+      node.vm.box = manager_box
+      node.vm.network :private_network, :ip => ip_range + i.to_s
+    end
+    result.push({
+      :ID => i,
+      :IP => ip_range + i.to_s,
+      :hostname => hostname   
+      })
+  end
+  File.open("vagrant_result.json", "wb") { |file| file.puts result.to_json }
+
+end

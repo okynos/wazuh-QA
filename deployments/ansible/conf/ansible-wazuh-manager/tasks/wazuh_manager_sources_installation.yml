@@ -1,0 +1,104 @@
+---
+- name: install python 2 if doesn't exist
+  raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+  when: ansible_os_family == "Debian"
+
+- name: Changing hostname to "{{ inventory_hostname }}"
+  hostname: 
+    name: "{{ inventory_hostname }}"
+
+- name: Update repository
+  package: name=* state=latest update_cache=yes
+
+- name: Install list of packages
+  action: package name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - make
+    - gcc
+    - automake
+    - autoconf
+    - libtool
+
+- name: Download pip
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+
+- name: Installing pip
+  command: python /tmp/get-pip.py
+
+- name: Installing pytest with pip
+  pip: 
+    name: pytest
+
+- name: Clean Wazuh directory if exists
+  file:
+    state: absent
+    path: "/root/wazuh"
+
+- git:
+    repo: 'https://github.com/wazuh/wazuh.git'
+    dest: '/root/wazuh'
+
+- name: Configure unattended installation
+  lineinfile:
+    dest: /root/wazuh/etc/preloaded-vars.conf
+    line: "{{ item }}"
+  with_items:
+    - 'USER_LANGUAGE="en"'
+    - 'USER_NO_STOP="y"'
+    - 'USER_INSTALL_TYPE="server"'
+    - 'USER_DIR="/var/ossec"'
+    - 'USER_ENABLE_EMAIL="n"'
+    - 'USER_WHITE_LIST="127.0.0.1/24"'
+    - 'USER_ENABLE_SYSCHECK="y"'
+    - 'USER_ENABLE_ROOTCHECK="y"'
+    - 'USER_ENABLE_OPENSCAP="y"'
+    - 'USER_ENABLE_SYSLOG="y"'
+    - 'USER_ENABLE_AUTHD="n"'
+    - 'USER_AUTO_START="y"'
+    - 'USER_UPDATE="n"'
+
+- name: Compiling and installing Wazuh (please wait)
+  shell: /root/wazuh/install.sh
+
+- name: Change communication protocol to TCP
+  lineinfile:
+    dest: /var/ossec/etc/ossec.conf
+    regexp: '<protocol>[a-z]*</protocol>'
+    line: '<protocol>tcp</protocol>'
+
+- name: Adding firewall rule
+  firewalld:
+    zone: public
+    port: 1514/tcp
+    permanent: true
+    state: enabled
+
+- name: Adding firewall Authd rule
+  firewalld:
+    zone: public
+    port: 1515/tcp
+    permanent: true
+    state: enabled
+    
+- name: Restarting firewall
+  service:
+    name: firewalld
+    state: restarted
+
+- name: Restarting wazuh-manager service
+  service:
+    name: wazuh-manager
+    state: restarted
+
+- name: Generate SSL files for authd
+  command: "openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout sslmanager.key -out sslmanager.cert"
+  args:
+    creates: sslmanager.cert
+    chdir: /var/ossec/etc/
+
+- name: Starting authd
+  shell: /var/ossec/bin/ossec-authd
+    
