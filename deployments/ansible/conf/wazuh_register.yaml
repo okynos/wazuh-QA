@@ -44,4 +44,4 @@
   - name: Starting wazuh-agent service
     service:
       name: wazuh-agent
-      state: started
+      state: restarted

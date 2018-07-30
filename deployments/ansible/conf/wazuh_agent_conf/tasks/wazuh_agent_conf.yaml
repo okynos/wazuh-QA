@@ -51,6 +51,12 @@
   with_items:
     - '001 agent any abcdefghijklmnopqrstuvwxyz'
 
+- name: Setting manager IP in agent
+  lineinfile:
+    path: /var/ossec/etc/ossec.conf
+    regexp: "      <address>MANAGER_IP</address>"
+    line: "      <address>{{wazuh_managers.0.address}}</address>"
+
 - name: Starting Wazuh-Agent service
   service:
     name: wazuh-agent

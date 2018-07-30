@@ -43,17 +43,8 @@
     name: firewalld
     state: restarted
 
-- name: Restarting wazuh-manager service
-  service:
-    name: wazuh-manager
-    state: restarted
-
 - name: Generate SSL files for authd
   command: "openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout sslmanager.key -out sslmanager.cert"
   args:
     creates: sslmanager.cert
-    chdir: /var/ossec/etc/
-
-- name: Starting authd
-  shell: /var/ossec/bin/ossec-authd
-    
+    chdir: /var/ossec/etc/    
