@@ -17,7 +17,7 @@ with open(sys.argv[1]) as json_data:
     ip = element['IP']
     identifier = str(element['ID'])
 
-    if hostname == 'WTAgent':
+    if hostname == 'TAgent':
       agents = agents + hostname + identifier + ' ansible_host=' + ip
       agents += '\n'
     else:
