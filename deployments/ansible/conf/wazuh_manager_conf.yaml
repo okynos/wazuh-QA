@@ -1,7 +1,7 @@
 ---
-- hosts: Agents
+- hosts: Managers
   roles:
-    - ansible-wazuh-agent
+    - wazuh_manager_conf
   vars:
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"

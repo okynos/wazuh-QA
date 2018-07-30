@@ -1,0 +1,3 @@
+---
+- import_tasks: "wazuh_agent_conf.yaml"
+  when: ansible_system == "Linux"

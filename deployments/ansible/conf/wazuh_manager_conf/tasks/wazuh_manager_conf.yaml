@@ -1,0 +1,59 @@
+---
+- name: Changing hostname to "{{ inventory_hostname }}"
+  hostname: 
+    name: "{{ inventory_hostname }}"
+
+- name: Update repository
+  package: name=* state=latest update_cache=yes
+
+- name: Download pip
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+
+- name: Installing pip
+  command: python /tmp/get-pip.py
+
+- name: Installing pytest with pip
+  pip: 
+    name: pytest
+
+- name: Change communication protocol to TCP
+  lineinfile:
+    dest: /var/ossec/etc/ossec.conf
+    regexp: '<protocol>[a-z]*</protocol>'
+    line: '<protocol>tcp</protocol>'
+
+- name: Adding firewall rule
+  firewalld:
+    zone: public
+    port: 1514/tcp
+    permanent: true
+    state: enabled
+
+- name: Adding firewall Authd rule
+  firewalld:
+    zone: public
+    port: 1515/tcp
+    permanent: true
+    state: enabled
+    
+- name: Restarting firewall
+  service:
+    name: firewalld
+    state: restarted
+
+- name: Restarting wazuh-manager service
+  service:
+    name: wazuh-manager
+    state: restarted
+
+- name: Generate SSL files for authd
+  command: "openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout sslmanager.key -out sslmanager.cert"
+  args:
+    creates: sslmanager.cert
+    chdir: /var/ossec/etc/
+
+- name: Starting authd
+  shell: /var/ossec/bin/ossec-authd
+    

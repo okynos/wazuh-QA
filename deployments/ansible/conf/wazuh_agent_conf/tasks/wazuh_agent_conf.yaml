@@ -1,0 +1,66 @@
+---
+- name: Changing hostname to "{{ inventory_hostname }}"
+  hostname: 
+    name: "{{ inventory_hostname }}"
+
+- name: Update repository
+  package: name=* state=latest update_cache=yes
+
+- name: Download pip
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+
+- name: Installing pip
+  command: python /tmp/get-pip.py
+
+- name: Installing pytest with pip
+  pip: 
+    name: pytest
+
+- name: Change communication protocol to TCP
+  lineinfile:
+    dest: /var/ossec/etc/ossec.conf
+    regexp: '<protocol>[a-z]*</protocol>'
+    line: '<protocol>tcp</protocol>'
+    backrefs: yes
+
+- name: Adding firewall rule
+  firewalld:
+    zone: public
+    port: 1514/tcp
+    permanent: true
+    state: enabled
+
+- name: Adding firewall Authd rule
+  firewalld:
+    zone: public
+    port: 1515/tcp
+    permanent: true
+    state: enabled
+    
+- name: Restarting firewall
+  service:
+    name: firewalld
+    state: restarted
+
+- name: Configure default client.keys
+  lineinfile:
+    dest: /var/ossec/etc/client.keys
+    line: "{{ item }}"
+  with_items:
+    - '001 agent any abcdefghijklmnopqrstuvwxyz'
+
+- name: Starting Wazuh-Agent service
+  service:
+    name: wazuh-agent
+    state: started
+
+- name: Registering agent with authd
+  shell: /var/ossec/bin/agent-auth -m {{wazuh_managers.0.address}}
+
+- name: Restarting agent
+  service:
+    name: wazuh-agent
+    state: restarted
+    
