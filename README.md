@@ -35,7 +35,7 @@ Wazuh-QA is a repository focused on automation of deployments and tests of wazuh
 └── tools -> We store here tools to transform vagrant or environment+deploy information to Ansible or JSON generic data.
     ├── generateInventory.py -> Generates Ansible inventory ready to work, It need mode of generation deploy/config and JSON with all data.
     ├── generateJSON.py -> Generates a JSON with all data, It need input of environment and deploy information in JSON.
-    └── vagrantJSON2Inventory.py -> Generates Ansible inventory ready to work, It need a JSON that vagrant creates and path to private key
+    └── vagrantJSON2Inventory.py -> Generates Ansible inventory ready to work, It need a JSON that vagrant creates and path to private key.
 
 
 ## Documentation
