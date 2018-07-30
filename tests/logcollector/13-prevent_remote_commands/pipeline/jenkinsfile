@@ -1,6 +1,6 @@
 // Configuration
 def deploy_path = "deployments/ansible"
-def deploy_conf = "$deploy_path/default.json"
+def deploy_conf = "$deploy_path/1m-c_1a-u.json"
 def test_route = "tests/logcollector/01-addlog/test/conf"
 def environment = "environments/env-docker"
 def env_file = "$environment/environment.json"
@@ -35,13 +35,13 @@ node("ansible"){
 
   stage("STAGE 1 - Deploy"){
     sh "ansible-playbook -i $hosts_deploy $deploy_path/conf/deploy.yaml"
-    sh "ansible-playbook -i $hosts_config $deploy_path/conf/install-wazuh-packages.yaml --extra-vars 'wazuh_version=$version'"
-    sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh-register.yaml"
+    sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh_packages_install.yaml --extra-vars 'wazuh_version=$version'"
+    sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh_register.yaml"
   }
 
-  stage("STAGE 2 - Test 01 - Add log to logcollector"){ 
-    sh "ansible-playbook -i $hosts_config $test_route/test_agent.yml"
-    sh "ansible-playbook -i $hosts_config $test_route/test_manager.yml"
+  stage("STAGE 2 - Running test"){ 
+    sh "ansible-playbook -i $hosts_config $test_route/test_agent.yaml"
+    sh "ansible-playbook -i $hosts_config $test_route/test_manager.yaml"
   }
 
   stage("STAGE X - Destroy"){

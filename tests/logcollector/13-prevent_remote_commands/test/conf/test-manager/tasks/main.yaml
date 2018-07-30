@@ -1,3 +1,3 @@
 ---
-- import_tasks: "configure_test.yml"
+- import_tasks: "configure_test.yaml"
   when: ansible_system == "Linux"

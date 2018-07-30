@@ -1,0 +1,36 @@
+---
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ test_files_dir }}/{{ test_file }}", dest: "{{ test_dir }}/{{ test_file }}" }
+    - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/{{ test_conf }}" }
+
+- name: Setting logcollector.remote_commands=1
+  lineinfile:
+    path: /var/ossec/etc/internal_options.conf
+    regexp: "logcollector.remote_commands=0"
+    line: "logcollector.remote_commands=1"
+
+- name: Append conf to ossec.conf
+  shell: cat "{{ test_dir }}/{{ test_conf }}" >> /var/ossec/etc/ossec.conf
+
+- name: Restarting agent
+  service:
+    name: wazuh-agent
+    state: restarted
+
+- name: Waiting for restart
+  pause:
+    seconds: 10
+
+- name: Writing alert to log
+  shell: cat "{{ test_dir }}/ssh.log" >> /var/ossec/logs/ssh.log
+
+- name: Running Test
+  command: pytest "{{ test_dir }}/{{ test_file }}::test_agent"
+    

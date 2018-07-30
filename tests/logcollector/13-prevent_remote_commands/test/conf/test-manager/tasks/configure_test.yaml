@@ -1,0 +1,28 @@
+---
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ test_files_dir }}/{{ test_file }}", dest: "{{ test_dir }}/{{ test_file }}" }
+
+- name: Setting logall to yes
+  lineinfile:
+    path: /var/ossec/etc/ossec.conf
+    regexp: "    <logall_json>no</logall_json>"
+    line: "    <logall_json>yes</logall_json>"
+
+- name: Restarting manager
+  service:
+    name: wazuh-manager
+    state: restarted
+
+- name: Waiting to get Log from Agents
+  pause:
+    seconds: 10
+
+- name: Running Test
+  command: pytest "{{ test_dir }}/{{ test_file }}::test_manager"

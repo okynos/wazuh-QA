@@ -1,0 +1,18 @@
+---
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ test_files_dir }}/{{ test_file }}", dest: "{{ test_dir }}/{{ test_file }}" }
+    - { src: "{{ required_files_dir }}/ssh.log", dest: "{{ test_dir }}/ssh.log" }
+
+- name: Waiting to get Log from Agents
+  pause:
+    seconds: 10
+
+- name: Running Test
+  command: pytest "{{ test_dir }}/test.py::test_manager"

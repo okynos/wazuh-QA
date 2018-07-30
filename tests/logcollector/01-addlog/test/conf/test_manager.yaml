@@ -1,8 +1,0 @@
----
-- hosts: Managers
-  roles:
-    - test-manager
-  vars:
-    testdir: /addlog
-    wazuh_managers:
-      - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
