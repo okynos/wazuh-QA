@@ -1,7 +1,7 @@
 // Configuration
 def deploy_path = "deployments/ansible"
 def deploy_conf = "$deploy_path/1m-c_1a-u.json"
-def test_route = "tests/logcollector/01-addlog/test/conf"
+def test_route = "tests/logcollector/13-prevent_remote_commands/test/conf"
 def environment = "environments/env-docker"
 def env_file = "$environment/environment.json"
 
