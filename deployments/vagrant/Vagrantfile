@@ -1,24 +1,30 @@
 # Author José Luis Fernández Aguilera
+require 'json'
+
+file = File.read(ENV['deploy_file'])
+data_hash = JSON.parse(file)
 
 result = []
-num_agents = 1
-agent_initial_id = 2
-agent_hostname_prefix = "TAgent"
-agent_box = "geerlingguy/centos7"
-agent_memory = 512
-agent_cpus = 1
+num_agents = data_hash['agents']['instances']
+agent_initial_id = data_hash['agents']['initial_id']
+agent_hostname_prefix = data_hash['agents']['hostname_prefix']
+agent_box = data_hash['agents']['box']
+agent_memory = data_hash['agents']['memory']
+agent_cpus = data_hash['agents']['cpus']
+agent_target = data_hash['agents']['target']
 
 # Boxes config
-num_managers = 1
-manager_box = "geerlingguy/centos7"
-manager_hostname_prefix = "TManager"
-manager_initial_id = 253
-manager_memory = 2048
-manager_cpus = 2
+num_managers = data_hash['managers']['instances']
+manager_box = data_hash['managers']['box']
+manager_hostname_prefix = data_hash['managers']['hostname_prefix']
+manager_initial_id = data_hash['managers']['initial_id']
+manager_memory = data_hash['managers']['memory']
+manager_cpus = data_hash['managers']['cpus']
+manager_target = data_hash['managers']['target']
 
 # Generic
-ip_range = "192.168.121."
-provider = "virtualbox"
+ip_range = data_hash['common']['ip_range']
+provider = data_hash['common']['provider']
 
 
 Vagrant.configure("2") do |config|
@@ -42,7 +48,8 @@ Vagrant.configure("2") do |config|
     result.push({
       :ID => i,
       :IP => ip_range + i.to_s,
-      :hostname => agent_hostname_prefix      
+      :hostname => agent_hostname_prefix,
+      :target => agent_target    
     })
   end
 
@@ -62,9 +69,10 @@ Vagrant.configure("2") do |config|
     result.push({
       :ID => i,
       :IP => ip_range + i.to_s,
-      :hostname => manager_hostname_prefix   
+      :hostname => manager_hostname_prefix,   
+      :target => manager_target
       })
   end
-  File.open("vagrant_result.json", "wb") { |file| file.puts result.to_json }
+  File.open("result.json", "wb") { |file| file.puts result.to_json }
 
 end

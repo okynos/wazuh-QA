@@ -14,14 +14,15 @@ with open(sys.argv[1]) as json_data:
 
   for element in data:
     hostname = element['hostname']
+    target = element['target']
     ip = element['IP']
     identifier = str(element['ID'])
 
-    if hostname == 'TAgent':
-      agents = agents + hostname + identifier + ' ansible_host=' + ip
+    if target == 'agent':
+      agents += hostname + identifier + ' ansible_host=' + ip
       agents += '\n'
-    else:
-      managers = managers + hostname + identifier + ' ansible_host=' + ip
+    elif target == 'manager':
+      managers += hostname + identifier + ' ansible_host=' + ip
       managers += '\n'
 
   print("[Agents]")

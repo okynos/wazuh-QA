@@ -1,0 +1,8 @@
+{
+  "agents": 
+    {"instances": 1, "initial_id": 2, "hostname_prefix": "TAgent", "box": "geerlingguy/centos7", "memory": 512, "cpus": 1, "target": "agent"}, 
+  "managers": 
+    {"instances": 1, "initial_id": 250, "hostname_prefix": "TManager", "box": "geerlingguy/centos7", "memory": 2048, "cpus": 2, "target": "manager"}, 
+  "common": 
+    {"ip_range": "192.168.121.", "provider": "virtualbox"}
+}
