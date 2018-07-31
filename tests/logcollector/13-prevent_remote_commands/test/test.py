@@ -9,5 +9,11 @@ def test_agent():
 
 def test_manager():
         f = open('/var/ossec/logs/archives/archives.json', 'r')
-        assert "Jun 27 14:35:27 localhost sshd[1258]: pam_unix(sshd:session): session opened for user root by (uid=0)" in f.read()
+        assert "ossec: output: 'ls -l /13-prevent_remote_commands/ls_test_dir/': total 4" in f.read()
+        f.close()
+        f = open('/var/ossec/logs/archives/archives.json', 'r')
+        assert "ossec: output: 'ls -l /13-prevent_remote_commands/ls_test_dir/': -rw-r--r-- 1 root root 381 Jul 31 09:33 test.conf" in f.read()
+        f.close()
+        f = open('/var/ossec/logs/archives/archives.json', 'r')
+        assert "ossec: output: 'cat /13-prevent_remote_commands/test.conf':\n<ossec_config>\n\n  <localfile>\n    <log_format>command</log_format>\n    <command>ls -l /13-prevent_remote_commands/ls_test_dir/</command>\n    <frequency>10</frequency>\n  </localfile>\n\n  <localfile>\n    <log_format>full_command</log_format>\n    <command>cat /13-prevent_remote_commands/test.conf</command>\n    <frequency>10</frequency>\n  </localfile>\n\n</ossec_config>" in f.read()
         f.close()
