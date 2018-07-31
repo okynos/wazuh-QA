@@ -9,7 +9,7 @@ def execution_node = params.execution_node
 
 // Configuration
 def deploy_path = "deployments/ansible"
-def environment = "environments/env-docker"
+def environment = "environments/$deploy_env"
 def env_file = "$environment/environment.json"
 def deploy_conf = "$deploy_path/$deploy"+".json"
 def test_route = "tests/$test/test/conf"
@@ -18,7 +18,7 @@ def vagrant_path = "deployments/vagrant"
 // Pipeline configuration
 def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
 def jenkins_branch = "master"
-def keys_path = "../../${env.WORKSPACE}/keys"
+def keys_path = ""
 
 // Temporal output
 def tmp_path = "tmp"
@@ -32,19 +32,22 @@ node(execution_node){
     sh "rm -rf $tmp_path"
     git branch: "$jenkins_branch", url: "$jenkins_repo"
     sh "mkdir -p $tmp_path"
+    keys_path = "${env.WORKSPACE}/../../keys"
     sh "cp $keys_path/* $tmp_path/"
     sh "chmod 0400 $tmp_path/id_rsa*"
-    sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
-    sh "python tools/generateInventory.py deploy $selected_deploy > $hosts_deploy"
-    sh "python tools/generateInventory.py config $selected_deploy > $hosts_config"
+    if (deploy_env == "env-docker"){
+      sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
+      sh "python tools/generateInventory.py deploy $selected_deploy > $hosts_deploy"
+      sh "python tools/generateInventory.py config $selected_deploy > $hosts_config"
+    }
   }
 
   stage("STAGE 1 - Deploy"){
-    if(deploy_env == "env-docker"){
+    if (deploy_env == "env-docker"){
       sh "ansible-playbook -i $hosts_deploy $deploy_path/conf/deploy.yaml"
       sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh_packages_install.yaml --extra-vars 'wazuh_version=$version'"
       sh "ansible-playbook -i $hosts_config $deploy_path/conf/wazuh_register.yaml"
-    }else if(deploy_env == "env-vm"){
+    }else if (deploy_env == "env-vm"){
       dir(vagrant_path){
         sh "deploy_file=$deploy_conf vagrant up"
       }
