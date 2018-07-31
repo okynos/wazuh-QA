@@ -1,7 +1,7 @@
 # test1AddLog.py
 def test_agent():
         f = open('/var/ossec/logs/ossec.log', 'r')
-        assert "Monitoring output of command(10): ls -l /13-prevent_remote_commands/ls_test_dir --time-style=+" in f.read()
+        assert "Monitoring output of command(10): ls -l /13-prevent_remote_commands/ls_test_dir/ --time-style=+" in f.read()
         f.close()
         f = open('/var/ossec/logs/ossec.log', 'r')
         assert "Monitoring full output of command(10): cat /13-prevent_remote_commands/test.conf" in f.read()
