@@ -18,7 +18,7 @@ def vagrant_path = "deployments/vagrant"
 // Pipeline configuration
 def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
 def jenkins_branch = "master"
-def keys_path = "/home/okynos/jenkins/keys"
+def keys_path = "../../$WORKSPACE/keys"
 
 // Temporal output
 def tmp_path = "tmp"
