@@ -12,7 +12,7 @@
   with_items:
     - { src: "{{ test_files_dir }}/{{ test_file }}", dest: "{{ test_dir }}/{{ test_file }}" }
     - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/{{ test_conf }}" }
-    - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/ls_test_dir/{{ test_conf }}" }
+    - { src: "{{ required_files_dir }}/cat_file.txt", dest: "{{ test_dir }}/ls_test_dir/cat_file.txt" }
     - { src: "{{ required_files_dir }}/cat_file.txt", dest: "{{ test_dir }}/cat_file.txt" }
 
 - name: Setting logcollector.remote_commands=1
