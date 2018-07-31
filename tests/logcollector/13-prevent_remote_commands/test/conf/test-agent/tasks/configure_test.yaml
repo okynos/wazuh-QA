@@ -2,6 +2,9 @@
 - name: Make new dir to store test
   file: path="{{ test_dir }}" state=directory
 
+- name: Make new dir to launch ls test
+  file: path="{{ test_dir }}/ls_test_dir" state=directory
+
 - name: Copy all files
   copy:
     src: "{{ item.src }}" 
@@ -9,6 +12,7 @@
   with_items:
     - { src: "{{ test_files_dir }}/{{ test_file }}", dest: "{{ test_dir }}/{{ test_file }}" }
     - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/{{ test_conf }}" }
+    - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/ls_test_dir/{{ test_conf }}" }
 
 - name: Setting logcollector.remote_commands=1
   lineinfile:
