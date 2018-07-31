@@ -8,7 +8,12 @@ def test = params.test
 def execution_node = params.execution_node
 
 // Configuration
-def deploy_path = "deployments/ansible"
+def deploy_path = ""
+if (deploy_env == "env-docker"){
+  deploy_path = "deployments/ansible"
+}else if (deploy_env == "env-vm"){
+  deploy_path = "deployments/vagrant"
+}
 def environment = "environments/$deploy_env"
 def env_file = "$environment/environment.json"
 def deploy_conf = "$deploy_path/$deploy"+".json"
