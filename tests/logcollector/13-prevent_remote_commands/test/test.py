@@ -12,7 +12,7 @@ def test_manager():
         assert "ossec: output: 'ls -l /13-prevent_remote_commands/ls_test_dir/ --time-style=+': total 4" in f.read()
         f.close()
         f = open('/var/ossec/logs/archives/archives.json', 'r')
-        assert "ossec: output: 'ls -l /13-prevent_remote_commands/ls_test_dir/ --time-style=+': -rw-r--r-- 1 root root 381 test.conf" in f.read()
+        assert "ossec: output: 'ls -l /13-prevent_remote_commands/ls_test_dir/ --time-style=+': -rw-r--r-- 1 root root 396  test.conf" in f.read()
         f.close()
         f = open('/var/ossec/logs/archives/archives.json', 'r')
         assert "ossec: output: 'cat /13-prevent_remote_commands/test.conf':\n<ossec_config>\n\n  <localfile>\n    <log_format>command</log_format>\n    <command>ls -l /13-prevent_remote_commands/ls_test_dir/</command>\n    <frequency>10</frequency>\n  </localfile>\n\n  <localfile>\n    <log_format>full_command</log_format>\n    <command>cat /13-prevent_remote_commands/test.conf</command>\n    <frequency>10</frequency>\n  </localfile>\n\n</ossec_config>" in f.read()
