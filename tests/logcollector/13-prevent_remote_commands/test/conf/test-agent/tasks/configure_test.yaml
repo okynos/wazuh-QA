@@ -28,9 +28,6 @@
   pause:
     seconds: 10
 
-- name: Writing alert to log
-  shell: cat "{{ test_dir }}/ssh.log" >> /var/ossec/logs/ssh.log
-
 - name: Running Test
   command: pytest "{{ test_dir }}/{{ test_file }}::test_agent"
     
