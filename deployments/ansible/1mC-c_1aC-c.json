@@ -1,0 +1,14 @@
+[
+  {
+    "type": "manager",
+    "system": "Centos",
+    "quantity": "1",
+    "docker_image": "okynos/centos7ssh"
+  },
+  {
+    "type": "agent",
+    "system": "Centos",
+    "quantity": "1",
+    "docker_image": "okynos/ucentos7ssh"
+  }
+]

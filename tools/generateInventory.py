@@ -61,10 +61,11 @@ for agent in agents:
     inventory += " docker_image=" + agent['docker_image']
     inventory += " ssh_port=" + str(agent['sshport'])
     inventory += " container_ip=" + agent['container_ip']  
-  elif goal == "config":
-    inventory += " ansible_host=" + agent['container_ip']
-    if agent['location'] == "external":
+  elif goal == "config" and agent['location'] == "external":
+      inventory += " ansible_host=" + agent['deploy_ip']
       inventory += " ansible_ssh_port=" + str(agent['sshport'])
+  else:
+    inventory += " ansible_host=" + agent['container_ip']
   inventory += " location=" + agent['location']
   inventory += "\n"
 
