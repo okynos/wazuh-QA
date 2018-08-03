@@ -49,19 +49,28 @@ for element in json_data:
     managers.append(obj.copy())
 
 
+
+
+
+
 inventory += "[Agents]\n"
 for agent in agents:
   inventory += agent['name']
   if goal == "deploy":
     inventory += " ansible_host=" + agent['deploy_ip']
     inventory += " docker_image=" + agent['docker_image']
-    inventory += " ssh_port=" + str(agent['sshport'])    
+    inventory += " ssh_port=" + str(agent['sshport'])
+    inventory += " container_ip=" + agent['container_ip']  
   elif goal == "config":
     inventory += " ansible_host=" + agent['container_ip']
     if agent['location'] == "external":
       inventory += " ansible_ssh_port=" + str(agent['sshport'])
   inventory += " location=" + agent['location']
   inventory += "\n"
+
+
+
+
 
 
 inventory += "\n[Managers]\n"
@@ -71,6 +80,7 @@ for manager in managers:
     inventory += " ansible_host=" + manager['deploy_ip']
     inventory += " docker_image=" + manager['docker_image']
     inventory += " ssh_port=" + str(manager['sshport']) 
+    inventory += " container_ip=" + manager['container_ip'] 
   elif goal == "config":
     inventory += " ansible_host=" + manager['container_ip']
     if manager['location'] == "external":
