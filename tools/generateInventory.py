@@ -25,16 +25,20 @@ for element in json_data:
   dtype = element['type']
   dsystem = element['system']
   ssh_port = element['sshport']
-  ip = element['ip']
+  deploy_ip = element['deploy_ip']
+  container_ip = element['container_ip']
   name = element['name']
   image = element['docker_image']
+  location = element['location']
   obj = {}
   obj['system'] = dsystem
   obj['type'] = dtype
   obj['sshport'] = ssh_port
-  obj['ip'] = ip
+  obj['deploy_ip'] = deploy_ip
+  obj['container_ip'] = container_ip
   obj['name'] = name
   obj['docker_image'] = image
+  obj['location'] = location
 
   if dtype == "agent":
     agents.append(obj.copy())
@@ -47,24 +51,33 @@ for element in json_data:
 
 inventory += "[Agents]\n"
 for agent in agents:
-  inventory += agent['name'] + " ansible_host=" + agent['ip']
+  inventory += agent['name']
   if goal == "deploy":
+    inventory += " ansible_host=" + agent['deploy_ip']
     inventory += " docker_image=" + agent['docker_image']
-    inventory += " ssh_port=" + str(agent['sshport'])  + "\n"
+    inventory += " ssh_port=" + str(agent['sshport'])    
   elif goal == "config":
-    inventory += " ansible_ssh_port=" + str(agent['sshport'])  + "\n"
+    inventory += " ansible_host=" + agent['container_ip']
+    if agent['location'] == "external":
+      inventory += " ansible_ssh_port=" + str(agent['sshport'])
+  inventory += " location=" + agent['location']
+  inventory += "\n"
 
 
 inventory += "\n[Managers]\n"
 for manager in managers:
-  inventory += manager['name'] + " ansible_host=" + manager['ip']
+  inventory += manager['name']
+  if goal == "deploy":
+    inventory += " ansible_host=" + manager['deploy_ip']
+    inventory += " docker_image=" + manager['docker_image']
+    inventory += " ssh_port=" + str(manager['sshport']) 
+  elif goal == "config":
+    inventory += " ansible_host=" + manager['container_ip']
+    if manager['location'] == "external":
+      inventory += " ansible_ssh_port=" + str(manager['sshport']) + "\n"
   inventory += " comm_port=" + str(manager['commport'])
   inventory += " auth_port=" + str(manager['authport'])
-  if goal == "deploy":
-    inventory += " docker_image=" + manager['docker_image']
-    inventory += " ssh_port=" + str(manager['sshport']) + "\n"
-  elif goal == "config":
-    inventory += " ansible_ssh_port=" + str(manager['sshport']) + "\n"
+  inventory += "\n"
 
 inventory += "\n[all:vars]\n"
 inventory += "ansible_user=root\n"

@@ -38,7 +38,7 @@ node(execution_node){
     git branch: "$jenkins_branch", url: "$jenkins_repo"
     sh "mkdir -p $tmp_path"
     keys_path = "${env.WORKSPACE}/../../keys"
-    sh "cp $keys_path/* $tmp_path/"
+    sh "cp '$keys_path'/* $tmp_path/"
     sh "chmod 0400 $tmp_path/id_rsa*"
     if (deploy_env == "env-docker"){
       sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
