@@ -36,10 +36,10 @@ node(execution_node){
   stage("STAGE 0 - Initializing environment"){
     sh "rm -rf $tmp_path"
     git branch: "$jenkins_branch", url: "$jenkins_repo"
-    sh "mkdir -p $tmp_path"
+    sh "mkdir -p $tmp_path/keys"
     keys_path = "${env.WORKSPACE}/../../keys"
-    sh "cp '$keys_path'/* $tmp_path/"
-    sh "chmod 0400 $tmp_path/id_rsa*"
+    sh "cp '$keys_path'/* $tmp_path/keys/"
+    sh "chmod 0400 $tmp_path/keys/*"
     if (deploy_env == "env-docker"){
       sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
       sh "python tools/generateInventory.py deploy $selected_deploy > $hosts_deploy"
