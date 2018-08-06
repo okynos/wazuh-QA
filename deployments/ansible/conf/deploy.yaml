@@ -1,6 +1,7 @@
 ---
 # Instance Manager containers
 - hosts: Managers
+  become: true
   vars:
     template:
       name: "{{ inventory_hostname }}"
@@ -27,6 +28,7 @@
 
 # Instance agent containers
 - hosts: Agents
+  become: true
   vars:
     template:
       name: "{{ inventory_hostname }}"

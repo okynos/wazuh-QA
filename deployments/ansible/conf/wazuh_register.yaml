@@ -3,6 +3,7 @@
 
 # Configure Wazuh-manager
 - hosts: Managers
+  become: true
   tasks:
   - name: Starting authd
     command: "/var/ossec/bin/ossec-authd"
@@ -17,29 +18,46 @@
 
 # Configure wazuh-agent
 - hosts: Agents
+  become: true
   vars:
     managerName: "{{ groups.Managers[0] }}"
     template:
       name: "{{ managerName }}"
       commPort: "{{ hostvars[managerName].comm_port }}"
       authPort: "{{ hostvars[managerName].auth_port }}"
-      ip: "{{ hostvars[managerName].ansible_host }}"
+      external_ip: "{{ hostvars[managerName].ansible_host }}"
+      internal_ip: "{{ hostvars[managerName].container_ip }}"
+      location: "{{ hostvars[inventory_hostname].location }}"
 
   tasks:
-  - name: Setting manager IP in agent
+  - name: Setting manager IP in agent -> External
     lineinfile:
       path: /var/ossec/etc/ossec.conf
       regexp: "      <address>MANAGER_IP</address>"
-      line: "      <address>{{ template.ip }}</address>"
+      line: "      <address>{{ template.external_ip }}</address>"
+    when: template.location ==  "external"
 
-  - name: Setting manager port in agent
+  - name: Setting manager port in agent -> External
     lineinfile:
       path: /var/ossec/etc/ossec.conf
       regexp: "      <port>1514</port>"
       line: "      <port>{{ template.commPort }}</port>"
+    when: template.location ==  "external"
 
-  - name: Starting authd in agent
-    command: "/var/ossec/bin/agent-auth -m {{ template.ip }} -p {{ template.authPort }}"
+  - name: Starting authd in agent -> External
+    command: "/var/ossec/bin/agent-auth -m {{ template.external_ip }} -p {{ template.authPort }}"
+    when: template.location ==  "external"
+
+  - name: Setting manager IP in agent -> Internal
+    lineinfile:
+      path: /var/ossec/etc/ossec.conf
+      regexp: "      <address>MANAGER_IP</address>"
+      line: "      <address>{{ template.internal_ip }}</address>"
+    when: template.location ==  "internal"
+
+  - name: Starting authd in agent -> Internal
+    command: "/var/ossec/bin/agent-auth -m {{ template.internal_ip }}"
+    when: template.location ==  "internal"
 
   - name: Starting wazuh-agent service
     service:

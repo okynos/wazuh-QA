@@ -2,17 +2,19 @@ import json
 import sys
 
 # Checkings
-if len(sys.argv) != 3:
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile")
+if len(sys.argv) != 5:
+  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user path_to_private_key")
   exit()
 
 # Loading data
 json_data = json.load(open(sys.argv[2]))
 goal = sys.argv[1].lower()
+path_private_key = sys.argv[4]
+ssh_user = sys.argv[3]
 
 
 if goal != "deploy" and goal != "config":
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile")
+  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user path_to_private_key")
   exit()
 
 # Private vars
@@ -56,17 +58,14 @@ for element in json_data:
 inventory += "[Agents]\n"
 for agent in agents:
   inventory += agent['name']
+  inventory += " ansible_host=" + agent['deploy_ip']
+  inventory += " container_ip=" + agent['container_ip']  
   if goal == "deploy":
-    inventory += " ansible_host=" + agent['deploy_ip']
     inventory += " docker_image=" + agent['docker_image']
     inventory += " ssh_port=" + str(agent['sshport'])
-    inventory += " container_ip=" + agent['container_ip']  
-  elif goal == "config" and agent['location'] == "external":
-      inventory += " ansible_host=" + agent['deploy_ip']
-      inventory += " ansible_ssh_port=" + str(agent['sshport'])
-  else:
-    inventory += " ansible_host=" + agent['container_ip']
-  inventory += " location=" + agent['location']
+  elif goal == "config":
+    inventory += " ansible_ssh_port=" + str(agent['sshport'])
+    inventory += " location=" + agent['location']
   inventory += "\n"
 
 
@@ -77,23 +76,21 @@ for agent in agents:
 inventory += "\n[Managers]\n"
 for manager in managers:
   inventory += manager['name']
+  inventory += " ansible_host=" + manager['deploy_ip']
+  inventory += " container_ip=" + manager['container_ip'] 
   if goal == "deploy":
-    inventory += " ansible_host=" + manager['deploy_ip']
     inventory += " docker_image=" + manager['docker_image']
     inventory += " ssh_port=" + str(manager['sshport']) 
-    inventory += " container_ip=" + manager['container_ip'] 
   elif goal == "config":
-    inventory += " ansible_host=" + manager['container_ip']
-    if manager['location'] == "external":
-      inventory += " ansible_ssh_port=" + str(manager['sshport']) + "\n"
+    inventory += " ansible_ssh_port=" + str(manager['sshport'])
   inventory += " comm_port=" + str(manager['commport'])
   inventory += " auth_port=" + str(manager['authport'])
   inventory += "\n"
 
 inventory += "\n[all:vars]\n"
-inventory += "ansible_user=root\n"
-inventory += "ansible_ssh_private_key_file=tmp/id_rsa_tmp\n"
+inventory += "ansible_user=" + ssh_user + "\n"
+inventory += "ansible_ssh_private_key_file=" + path_private_key + "\n"
 inventory += "ansible_ssh_common_args='-o StrictHostKeyChecking=no'\n"
-inventory += "ansible_ssh_pass=root\n"
+inventory += "ansible_ssh_pass=root\n" 
 
 print inventory

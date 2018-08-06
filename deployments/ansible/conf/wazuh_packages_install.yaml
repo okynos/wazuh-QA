@@ -3,6 +3,7 @@
 
 # Configure repos for all servers
 - hosts: all
+  become: true
   tasks: 
   - name: Set YUM wazuh repo
     yum_repository:
@@ -32,6 +33,7 @@
 
 # Configure Wazuh-manager
 - hosts: Managers
+  become: true
   tasks:
   - name: Installing wazuh-manager YUM
     package:

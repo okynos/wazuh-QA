@@ -8,7 +8,7 @@
   {
     "type": "agent",
     "system": "Centos",
-    "quantity": "1",
-    "docker_image": "okynos/ucentos7ssh"
+    "quantity": "10",
+    "docker_image": "okynos/centos7ssh"
   }
 ]
