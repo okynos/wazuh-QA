@@ -1,11 +1,11 @@
 // Parameters from Jenkins
-def version = params.wazuh_version
-def branch = params.branch
-def installation = params.installation
-def deploy_env = params.where_deploy
-def deploy = params.deploy
-def test = params.test
-def execution_node = params.execution_node
+def version = params.WAZUH_VERSION
+def branch = params.BRANCH
+def installation = params.INSTALLATION
+def deploy_env = params.WHERE_DEPLOY
+def deploy = params.DEPLOY
+def test = params.TEST
+def execution_node = params.EXECUTION_NODE
 
 // Configuration
 def deploy_path = ""
