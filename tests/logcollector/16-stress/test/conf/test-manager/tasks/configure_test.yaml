@@ -1,0 +1,24 @@
+---
+- name: Clean previous tests
+  file:
+    state: absent
+    path: "{{ test_dir }}/"
+
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ local_test_dir }}/{{ test_name }}.py", dest: "{{ test_dir }}/{{ test_name }}.py" }
+
+- name: Running test checker
+  command: python "{{ test_dir }}/{{ test_name }}.py" /var/ossec/logs/alerts/alerts.json "{{ test_dir }}/test_output.txt" "{{ run_time }}" "{{ num_agents }}"
+
+- name: Fetch results of test
+  fetch:
+    src: "{{ test_dir }}/test_output.txt"
+    dest: results
+  

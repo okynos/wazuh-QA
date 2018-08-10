@@ -1,0 +1,20 @@
+---
+- name: Clean previous tests
+  file:
+    state: absent
+    path: "{{ test_dir }}/"
+
+- name: Make new dir to store test
+  file: path="{{ test_dir }}" state=directory
+
+- name: Copy all files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ local_test_dir }}/{{ test_name }}.py", dest: "{{ test_dir }}/{{ test_name }}.py" }
+    - { src: "{{ required_files }}/{{ test_name }}.log", dest: "{{ test_dir }}/{{ test_name }}.log" }
+
+- name: Running whodata alert generation
+  command: nohup python "{{ test_dir }}/{{ test_name }}.py" "{{ test_name }}.log" "{{ alerts_per_agent }}" "{{ interval }}" &
+    

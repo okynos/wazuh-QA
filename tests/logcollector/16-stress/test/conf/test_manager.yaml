@@ -1,0 +1,13 @@
+---
+- hosts: Managers
+  roles:
+    - test-manager
+  vars:
+    test_name: logcollector_stress_test
+    test_dir: "/{{ test_name }}"
+    required_files: ../../requiredfiles
+    local_test_dir: ../../test
+    interval: 1
+    alerts_per_agent: 1000
+    wazuh_managers:
+      - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"

@@ -1,0 +1,4 @@
+{
+  "logcollector_stress_test.py::test_alerts_agent": true, 
+  "whodata_test.py": true
+}
