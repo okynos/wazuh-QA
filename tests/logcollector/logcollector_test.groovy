@@ -7,7 +7,7 @@ def goal_api_branch = "master"
 def repo = "dev"
 
 // tests to pass
-def tests_to_pass = ['logcollector/01-add_log','logcollector/14-check_captured_command']
+def tests_to_pass = ['01-add_log','14-check_captured_command']
 
 node(execution_node){
 

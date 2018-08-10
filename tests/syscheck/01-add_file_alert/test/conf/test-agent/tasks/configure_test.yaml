@@ -1,4 +1,14 @@
 ---
+- name: Stop wazuh agent to avoid alerts
+  service:
+    name: wazuh-agent
+    state: stopped
+
+- name: Clean previous tests
+  file:
+    state: absent
+    path: "{{ test_dir }}/"
+
 - name: Make new dir to store test
   file: path="{{ test_dir }}" state=directory
 
@@ -7,9 +17,7 @@
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}"
   with_items:
-    - { src: "{{ required_files_dir }}/ssh.log", dest: /var/ossec/logs/ssh.log }
-    - { src: "{{ required_files_dir }}/ssh.log", dest: "{{ test_dir }}/ssh.log" }
-    - { src: "{{ test_files_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
+    - { src: "{{ local_test_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
     - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/{{ test_conf }}" }
 
 - name: Append conf to ossec.conf
@@ -20,13 +28,15 @@
     name: wazuh-agent
     state: restarted
 
-- name: Waiting for restart
+- name: Waiting to restart
   pause:
     seconds: "{{ waiting_time }}"
 
-- name: Writing alert to log
-  shell: cat "{{ test_dir }}/ssh.log" >> /var/ossec/logs/ssh.log
+- name: Create file that will alert
+  file: 
+    path: "{{ test_dir }}/{{ test_name }}.txt" 
+    state: touch
 
-- name: Running Test
+- name: Running test
   command: pytest "{{ test_dir }}/{{ test_script }}::test_agent"
     

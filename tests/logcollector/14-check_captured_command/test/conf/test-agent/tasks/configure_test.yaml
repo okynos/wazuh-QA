@@ -31,7 +31,7 @@
 
 - name: Waiting for restart
   pause:
-    seconds: 10
+    seconds: "{{ waiting_time }}"
 
 - name: Running Test
   command: pytest "{{ test_dir }}/{{ test_file }}::test_agent"

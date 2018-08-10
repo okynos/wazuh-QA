@@ -16,7 +16,7 @@
 
 - name: Waiting to get Log from Agents
   pause:
-    seconds: 10
+    seconds: "{{ waiting_time }}"
 
 - name: Running watchdog
   command: python "{{ test_dir }}/{{ test_name }}_test.py" /var/ossec/logs/alerts/alerts.json "{{ test_dir }}/test_output.txt" "{{ run_time }}" "{{ num_agents }}"

@@ -1,9 +1,9 @@
 ---
-- hosts: Agents
+- hosts: Managers
   roles:
-    - test-agent
+    - test-manager
   vars:
-    test_name: add_log
+    test_name: add_file_alert
     test_dir: "/{{ test_name }}"
     test_script: "{{ test_name }}_test.py"
     test_conf: "{{ test_name }}.conf"
@@ -13,4 +13,3 @@
     waiting_time: 10
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
-

@@ -3,10 +3,10 @@
   roles:
     - test-manager
   vars:
-    test_name: 01-add_log
+    test_name: add_log
     test_dir: "/{{ test_name }}"
-    test_file: "test.py"
-    test_conf: "test.conf"
+    test_script: "{{ test_name }}_test.py"
+    test_conf: "{{ test_name }}.conf"
     root_dir: "../.."
     required_files_dir: "{{ root_dir }}/required_files"
     test_files_dir: "{{ root_dir }}/test"

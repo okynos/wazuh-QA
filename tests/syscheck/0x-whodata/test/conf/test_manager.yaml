@@ -5,9 +5,10 @@
   vars:
     test_name: whodata
     test_dir: "/{{ test_name }}"
-    required_files: ../../requiredfiles
+    required_files: ../../required_files
     local_test_dir: ../../test
     num_agents: 20
     run_time: 60
+    waiting_time: 10
     wazuh_managers:
       - address: "{{ hostvars[groups.Managers[0]]['ansible_host'] }}"
