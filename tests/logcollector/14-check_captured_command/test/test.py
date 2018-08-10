@@ -9,10 +9,10 @@ def test_agent():
 
 def test_manager():
         f = open('/var/ossec/logs/archives/archives.json', 'r')
-        assert "ossec: output: 'du -a /14-check_captured_command/ls_test_dir/': 4	/14-check_captured_command/ls_test_dir/cat_file.txt" in f.read()
+        assert "ossec: output: 'du -a /14-check_captured_command/ls_test_dir/': 4\\t/14-check_captured_command/ls_test_dir/cat_file.txt" in f.read()
         f.close()
         f = open('/var/ossec/logs/archives/archives.json', 'r')
-        assert "ossec: output: 'du -a /14-check_captured_command/ls_test_dir/': 4	/14-check_captured_command/ls_test_dir/" in f.read()
+        assert "ossec: output: 'du -a /14-check_captured_command/ls_test_dir/': 4\\t/14-check_captured_command/ls_test_dir/" in f.read()
         f.close()
         f = open('/var/ossec/logs/archives/archives.json', 'r')
         assert "ossec: output: 'cat /14-check_captured_command/cat_file.txt':\\ncat test" in f.read()
