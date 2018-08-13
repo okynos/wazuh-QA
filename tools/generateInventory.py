@@ -2,19 +2,20 @@ import json
 import sys
 
 # Checkings
-if len(sys.argv) != 5:
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user path_to_private_key")
+if len(sys.argv) != 6:
+  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user name_prefix path_to_private_key")
   exit()
 
 # Loading data
 json_data = json.load(open(sys.argv[2]))
 goal = sys.argv[1].lower()
-path_private_key = sys.argv[4]
+path_private_key = sys.argv[5]
 ssh_user = sys.argv[3]
+name_prefix = sys.argv[4]
 
 
 if goal != "deploy" and goal != "config":
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user path_to_private_key")
+  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user name_prefix path_to_private_key")
   exit()
 
 # Private vars
@@ -38,7 +39,7 @@ for element in json_data:
   obj['sshport'] = ssh_port
   obj['deploy_ip'] = deploy_ip
   obj['container_ip'] = container_ip
-  obj['name'] = name
+  obj['name'] = name_prefix + "_" + name
   obj['docker_image'] = image
   obj['location'] = location
 
