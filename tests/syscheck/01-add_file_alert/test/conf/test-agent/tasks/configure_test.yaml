@@ -23,6 +23,12 @@
 - name: Append conf to ossec.conf
   shell: cat "{{ test_dir }}/{{ test_conf }}" >> /var/ossec/etc/ossec.conf
 
+- name: Setting agent syscheck sleep time to 0
+  lineinfile:
+    path: /var/ossec/etc/internal_options.conf
+    regexp: "syscheck.sleep=1"
+    line: "syscheck.sleep=0"
+
 - name: Restarting agent
   service:
     name: wazuh-agent
@@ -39,4 +45,3 @@
 
 - name: Running test
   command: pytest "{{ test_dir }}/{{ test_script }}::test_agent"
-    
