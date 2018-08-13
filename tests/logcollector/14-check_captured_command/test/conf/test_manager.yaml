@@ -3,7 +3,7 @@
   roles:
     - test-manager
   vars:
-    test_name: 14-check_captured_command
+    test_name: check_captured_command
     test_dir: "/{{ test_name }}"
     test_file: "test.py"
     test_conf: "test.conf"
