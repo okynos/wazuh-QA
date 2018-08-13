@@ -17,7 +17,7 @@
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}"
   with_items:
-    - { src: "{{ local_test_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
+    - { src: "{{ test_files_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
     - { src: "{{ required_files_dir }}/{{ test_conf }}", dest: "{{ test_dir }}/{{ test_conf }}" }
 
 - name: Append conf to ossec.conf

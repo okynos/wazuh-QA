@@ -12,7 +12,7 @@
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}"
   with_items:
-    - { src: "{{ test_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
+    - { src: "{{ test_files_dir }}/{{ test_script }}", dest: "{{ test_dir }}/{{ test_script }}" }
 
 - name: Waiting to get Log from Agents
   pause:

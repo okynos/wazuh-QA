@@ -1,7 +1,7 @@
 #!groovy
 
 def execution_node = params.EXECUTION_NODE
-def tests_to_pass = ['01-add_log','14-check_captured_command']
+def tests_to_pass = ['01-add_file_alert']
 def stages_for_parallel = tests_to_pass.collectEntries {
   ["$it": to_stage(it)]
 }
@@ -23,7 +23,7 @@ def to_stage(test) {
       def goal_branch = "master"
       def goal_api_branch = "master"
       def repo = "dev"
-      def test_goal = "logcollector"
+      def test_goal = "syscheck"
       build job: "$test_goal-test_automatic", parameters: [
         string(name: 'WAZUH_VERSION', value: "$goal_version"),
         string(name: 'WHERE_DEPLOY', value: "env-docker"),
