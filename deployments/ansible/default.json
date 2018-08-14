@@ -7,8 +7,8 @@
   },
   {
     "type": "agent",
-    "system": "Ubuntu",
-    "quantity": "2",
-    "docker_image": "okynos/ubuntu-ssh"
+    "system": "Centos",
+    "quantity": "1",
+    "docker_image": "okynos/centos7ssh"
   }
 ]

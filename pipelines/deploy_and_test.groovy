@@ -46,8 +46,8 @@ node(execution_node){
     sh "chmod 0400 $tmp_path/keys/$key_name"
     if (deploy_env == "env-docker"){
       sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
-      sh "python tools/generateInventory.py deploy $selected_deploy $machine_user $deploy_prefix $tmp_path/keys/$key_name > $hosts_deploy"
-      sh "python tools/generateInventory.py config $selected_deploy $docker_container_user $deploy_prefix $tmp_path/keys/$key_name > $hosts_config"
+      sh "python tools/generateInventory.py deploy $selected_deploy $deploy_prefix $machine_user $tmp_path/keys/$key_name > $hosts_deploy"
+      sh "python tools/generateInventory.py config $selected_deploy $deploy_prefix $docker_container_user $tmp_path/keys/$key_name > $hosts_config"
     }
   }
 

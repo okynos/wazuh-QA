@@ -2,20 +2,25 @@ import json
 import sys
 
 # Checkings
-if len(sys.argv) != 6:
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user name_prefix path_to_private_key")
+if len(sys.argv) < 3:
+  print("Usage: " + sys.argv[0] + " (deploy/config) JSONFile [name_prefix] [ssh_user] [path_to_private_key]")
   exit()
-
 # Loading data
-json_data = json.load(open(sys.argv[2]))
-goal = sys.argv[1].lower()
-path_private_key = sys.argv[5]
-ssh_user = sys.argv[3]
-name_prefix = sys.argv[4]
-
+if len(sys.argv) >= 3:
+  json_data = json.load(open(sys.argv[2]))
+  goal = sys.argv[1].lower()
+  name_prefix = ""
+  ssh_user = ""
+  path_private_key = ""
+  if len(sys.argv) >= 4:
+    name_prefix = sys.argv[3]
+    if len(sys.argv) >= 5:
+      ssh_user = sys.argv[4]
+    if len(sys.argv) >= 6:
+      path_private_key = sys.argv[5]
 
 if goal != "deploy" and goal != "config":
-  print("Usage: " + sys.argv[0] + " [deploy/config] JSONFile ssh_user name_prefix path_to_private_key")
+  print("Usage: " + sys.argv[0] + " (deploy/config) JSONFile [name_prefix] [ssh_user] [path_to_private_key]")
   exit()
 
 # Private vars
@@ -39,7 +44,10 @@ for element in json_data:
   obj['sshport'] = ssh_port
   obj['deploy_ip'] = deploy_ip
   obj['container_ip'] = container_ip
-  obj['name'] = name_prefix + "_" + name
+  if name_prefix != "":
+    obj['name'] = name_prefix + "_" + name
+  else:
+    obj['name'] = name
   obj['docker_image'] = image
   obj['location'] = location
 
@@ -89,8 +97,11 @@ for manager in managers:
   inventory += "\n"
 
 inventory += "\n[all:vars]\n"
-inventory += "ansible_user=" + ssh_user + "\n"
-inventory += "ansible_ssh_private_key_file=" + path_private_key + "\n"
+if ssh_user != "":
+  inventory += "ansible_user=" + ssh_user + "\n"
+if path_private_key != "":
+  inventory += "ansible_ssh_private_key_file=" + path_private_key + "\n"
+
 inventory += "ansible_ssh_common_args='-o StrictHostKeyChecking=no'\n"
 inventory += "ansible_ssh_pass=root\n" 
 
