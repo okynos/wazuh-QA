@@ -46,7 +46,8 @@ node(execution_node){
           choice(choices: ['notDefined'], description: '', name: 'DEPLOY_PREFIX'),
           choice(choices: ['master'], description: '', name: 'EXECUTION_NODE'),
           choice(choices: ['ec2-user'], description: '', name: 'MACHINE_USER'),
-          credentials(credentialType: 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey', defaultValue: '', description: '', name: 'MACHINE_CREDENTIALS', required: true)
+          // ADD PARAMETER MANUALLY
+          //credentials(credentialType: 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey', defaultValue: '', description: '', name: 'MACHINE_CREDENTIALS', required: true)
         ])
       ])
       currentBuild.result = 'ABORTED'
