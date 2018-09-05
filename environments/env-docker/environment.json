@@ -1,14 +1,10 @@
 [
   {
     "system": "Centos",
-    "ip": "ec2-18-216-185-18.us-east-2.compute.amazonaws.com"
-  },
-  {
-    "system": "Centos2",
-    "ip": "ec2-18-216-185-18.us-east-2.compute.amazonaws.com"
+    "ip": "10.0.0.148"
   },
   {
     "system": "Ubuntu",
-    "ip": "192.168.101.183"
+    "ip": "10.0.0.11"
   }
 ]

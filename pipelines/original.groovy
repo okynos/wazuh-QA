@@ -5,7 +5,6 @@ def branch = params.BRANCH
 def installation = params.INSTALLATION
 def deploy_env = params.WHERE_DEPLOY
 def deploy = params.DEPLOY
-def deploy_prefix = params.DEPLOY_PREFIX
 def test = params.TEST
 def execution_node = params.EXECUTION_NODE
 def key_name = params.KEY_NAME
@@ -47,8 +46,8 @@ node(execution_node){
     sh "chmod 0400 $tmp_path/keys/$key_name"
     if (deploy_env == "env-docker"){
       sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
-      sh "python tools/generateInventory.py deploy $selected_deploy $deploy_prefix $machine_user $tmp_path/keys/$key_name > $hosts_deploy"
-      sh "python tools/generateInventory.py config $selected_deploy $deploy_prefix $docker_container_user $tmp_path/keys/$key_name > $hosts_config"
+      sh "python tools/generateInventory.py deploy $selected_deploy $machine_user $tmp_path/keys/$key_name > $hosts_deploy"
+      sh "python tools/generateInventory.py config $selected_deploy $docker_container_user $tmp_path/keys/$key_name > $hosts_config"
     }
   }
 

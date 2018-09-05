@@ -1,3 +1,4 @@
+//DEPRECATED
 // Parameters from Jenkins
 def version = params.WAZUH_VERSION
 def branch = params.BRANCH

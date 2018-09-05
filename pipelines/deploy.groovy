@@ -6,16 +6,19 @@ def credentials = params.MACHINE_CREDENTIALS
 def string_hosts_deploy = params.HOSTS_DEPLOY
 def string_hosts_config = params.HOSTS_CONFIG
 def dry_run = params.INVOKE_PARAMETERS
-
-// Configuration
-def deploy_path = "deployments/ansible"
+def test = params.TEST
 
 // Pipeline configuration
-def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
-def jenkins_branch = "master"
+def jenkins_repo = params.JENKINS_REPO
+def jenkins_credentials = params.JENKINS_CREDENTIALS
+def jenkins_branch = params.JENKINS_BRANCH
+def quality_dir = params.QUALITY_DIR
+
+// Configuration
+def deploy_path = "${quality_dir}deployments/ansible"
 
 // Temporal output
-def tmp_path = "tmp"
+def tmp_path = "${quality_dir}tmp"
 def hosts_deploy = "$tmp_path/hosts_deploy"
 def hosts_config = "$tmp_path/hosts_config"
 
@@ -39,20 +42,24 @@ node(execution_node){
       error('DRY RUN COMPLETED. JOB PARAMETERIZED.')
     }
 
-
-    sh "rm -rf ./*"
-    git branch: "$jenkins_branch", url: "$jenkins_repo"
-    sh "mkdir -p $tmp_path"
-    writeFile file: "$hosts_deploy", text: "$string_hosts_deploy"
-    writeFile file: "$hosts_config", text: "$string_hosts_config"
+    sh "mkdir -p $test"
+    dir("./$test"){
+      sh "rm -rf $tmp_path"
+      git branch: "$jenkins_branch", credentialsId: "$jenkins_credentials", url: "$jenkins_repo"
+      sh "mkdir -p $tmp_path"
+      writeFile file: "$hosts_deploy", text: "$string_hosts_deploy"
+      writeFile file: "$hosts_config", text: "$string_hosts_config"
+    }
   }
 
   stage("STAGE 1 - Deploy instances"){
-    ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_deploy", playbook: "$deploy_path/conf/deploy.yaml"
+    dir("./$test"){
+      ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_deploy", playbook: "$deploy_path/conf/deploy.yaml"
 
-    ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, extras: "--extra-vars wazuh_version=$version", inventory: "$hosts_config", playbook: "$deploy_path/conf/wazuh_packages_install.yaml"
+      ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, extras: "--extra-vars wazuh_version=$version", inventory: "$hosts_config", playbook: "$deploy_path/conf/wazuh_packages_install.yaml"
 
-    ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_config", playbook: "$deploy_path/conf/wazuh_register.yaml"
+      ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_config", playbook: "$deploy_path/conf/wazuh_register.yaml"
+    }
   }
 
 }

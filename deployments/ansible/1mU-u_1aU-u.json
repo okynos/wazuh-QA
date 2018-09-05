@@ -1,0 +1,14 @@
+[
+  {
+    "type": "manager",
+    "system": "Ubuntu",
+    "quantity": "1",
+    "docker_image": "okynos/ubuntu-ssh"
+  },
+  {
+    "type": "agent",
+    "system": "Ubuntu",
+    "quantity": "1",
+    "docker_image": "okynos/ubuntu-ssh"
+  }
+]

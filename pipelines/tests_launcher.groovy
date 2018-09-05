@@ -8,41 +8,45 @@ def branch = params.BRANCH
 def test_module = params.TEST_MODULE
 def deploy_env = params.DEPLOY_ENVIRONMENT
 def deploy = params.DEPLOY_GOAL
-def deploy_prefix = params.DEPLOY_PREFIX
 def credentials = params.MACHINE_CREDENTIALS
 def node_username = params.NODE_USERNAME
 def tests_to_pass = params.TESTS
 def dry_run = params.INVOKE_PARAMETERS
 def destroy = params.DESTROY
+
+// Pipeline configuration
+def jenkins_repo = params.JENKINS_REPO
+def jenkins_credentials = params.JENKINS_CREDENTIALS
+def jenkins_branch = params.JENKINS_BRANCH
+def quality_dir = params.QUALITY_DIR
+
 def stages_for_parallel = tests_to_pass.split().collectEntries {
-  ["$it": to_stage(it, execution_node, goal_version, repo, test_module, deploy_env, deploy, node_username, credentials)]
+  ["$it": to_stage(it, execution_node, goal_version, repo, test_module, deploy_env, deploy, branch, node_username, credentials, jenkins_repo, jenkins_credentials, jenkins_branch, quality_dir)]
 }
 
 
-def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, deploy, node_username, credentials) {
+def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, deploy, branch, node_username, credentials, jenkins_repo, jenkins_credentials, jenkins_branch, quality_dir) {
   return {
 
     // Configuration
     def deploy_path = ""
     if (deploy_env == "env-docker"){
-      deploy_path = "deployments/ansible"
+      deploy_path = "${quality_dir}deployments/ansible"
     }else if (deploy_env == "env-vm"){
-      deploy_path = "deployments/vagrant"
+      deploy_path = "${quality_dir}deployments/vagrant"
     }
-    def environment = "environments/$deploy_env"
+    def environment = "${quality_dir}environments/$deploy_env"
     def env_file = "$environment/environment.json"
     def deploy_conf = "$deploy_path/$deploy"+".json"
-    def test_route = "tests/$test/test/conf"
+    def test_route = "${quality_dir}tests/$test/test/conf"
     def vagrant_path = "deployments/vagrant"
     def docker_container_user = "root"
-
-    // Pipeline configuration
-    def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
-    def jenkins_branch = "master"
-    def keys_path = ""
+    def keys_path = "${quality_dir}"
+    def tools_dir = "${quality_dir}tools"
+    def deploy_prefix = "${test_module}_${test}"
 
     // Temporal output
-    def tmp_path = "tmp"
+    def tmp_path = "${quality_dir}tmp"
     def first_random = Math.abs(new Random().nextInt() % 999) + 1
     def second_random = Math.abs(new Random().nextInt() % 999) + 1
     def hosts_deploy = "$tmp_path/hosts_deploy_${first_random}_${second_random}"
@@ -67,17 +71,21 @@ def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, 
 
     stage("STAGE 0 - Init environment - test: " + test){
       // Deploy and test configs
-      sh "rm -rf ./*"
-      git branch: "$jenkins_branch", url: "$jenkins_repo"
-      sh "mkdir -p $tmp_path"
+      sh "mkdir -p $test"
+      dir("./$test"){
+        sh "rm -rf $tmp_path"
+        git branch: "$jenkins_branch", credentialsId: "$jenkins_credentials", url: "$jenkins_repo"
+        
+        sh "mkdir -p $tmp_path"
 
-      if (deploy_env == "env-docker"){
+        if (deploy_env == "env-docker"){
 
-        sh "python tools/generateJSON.py $env_file $deploy_conf > $selected_deploy"
-        sh "python tools/generateInventory.py deploy $selected_deploy $deploy_prefix $node_username > $hosts_deploy"
-        sh "python tools/generateInventory.py config $selected_deploy $deploy_prefix $docker_container_user > $hosts_config"
-        string_hosts_deploy = readFile "$hosts_deploy"
-        string_hosts_config = readFile "$hosts_config"
+          sh "python ${tools_dir}/generateJSON.py $env_file $deploy_conf > $selected_deploy"
+          sh "python ${tools_dir}/generateInventory.py deploy $selected_deploy $deploy_prefix $node_username > $hosts_deploy"
+          sh "python ${tools_dir}/generateInventory.py config $selected_deploy $deploy_prefix $docker_container_user > $hosts_config"
+          string_hosts_deploy = readFile "$hosts_deploy"
+          string_hosts_config = readFile "$hosts_config"
+        }
       }
     }
 
@@ -88,6 +96,11 @@ def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, 
         string(name: 'EXECUTION_NODE', value: "$execution_node"),
         string(name: 'HOSTS_DEPLOY', value: "$string_hosts_deploy"),
         string(name: 'HOSTS_CONFIG', value: "$string_hosts_config"),
+        string(name: 'JENKINS_REPO', value: "$jenkins_repo"),
+        string(name: 'JENKINS_CREDENTIALS', value: "$jenkins_credentials"),
+        string(name: 'JENKINS_BRANCH', value: "$jenkins_branch"),
+        string(name: 'QUALITY_DIR', value: "$quality_dir"),
+        string(name: 'TEST', value: "$test"),
         string(name: 'MACHINE_CREDENTIALS', value: "$credentials")
       ]
     }
@@ -96,6 +109,10 @@ def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, 
       build job: "Launch_wazuh_test", parameters: [
         string(name: 'TEST', value: "$test"),
         string(name: 'EXECUTION_NODE', value: "$execution_node"),
+        string(name: 'JENKINS_REPO', value: "$jenkins_repo"),
+        string(name: 'JENKINS_CREDENTIALS', value: "$jenkins_credentials"),
+        string(name: 'JENKINS_BRANCH', value: "$jenkins_branch"),
+        string(name: 'QUALITY_DIR', value: "$quality_dir"),
         string(name: 'HOSTS_CONFIG', value: "$string_hosts_config")
       ]
     }
@@ -105,6 +122,11 @@ def to_stage(test, execution_node, goal_version, repo, test_module, deploy_env, 
         build job: "Destroy_wazuh_instances", parameters: [
           string(name: 'EXECUTION_NODE', value: "$execution_node"),
           string(name: 'HOSTS_DEPLOY', value: "$string_hosts_deploy"),
+          string(name: 'JENKINS_REPO', value: "$jenkins_repo"),
+          string(name: 'JENKINS_CREDENTIALS', value: "$jenkins_credentials"),
+          string(name: 'JENKINS_BRANCH', value: "$jenkins_branch"),
+          string(name: 'QUALITY_DIR', value: "$quality_dir"),
+          string(name: 'TEST', value: "$test"),
           string(name: 'MACHINE_CREDENTIALS', value: "$credentials")
         ]
       }

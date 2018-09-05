@@ -4,15 +4,18 @@ def execution_node = params.EXECUTION_NODE
 def dry_run = params.INVOKE_PARAMETERS
 def credentials = params.MACHINE_CREDENTIALS
 
-// Configuration
-def deploy_path = "deployments/ansible"
-
 // Pipeline configuration
-def jenkins_repo = "https://github.com/okynos/wazuh-QA.git"
-def jenkins_branch = "master"
+def jenkins_repo = params.JENKINS_REPO
+def jenkins_credentials = params.JENKINS_CREDENTIALS
+def jenkins_branch = params.JENKINS_BRANCH
+def quality_dir = params.QUALITY_DIR
+def test = params.TEST
+
+// Configuration
+def deploy_path = "${quality_dir}deployments/ansible"
 
 // Temporal output
-def tmp_path = "tmp"
+def tmp_path = "${quality_dir}tmp"
 def hosts_deploy = "$tmp_path/hosts_deploy"
 
 
@@ -30,14 +33,20 @@ node(execution_node){
       currentBuild.result = 'ABORTED'
       error('DRY RUN COMPLETED. JOB PARAMETERIZED.')
     }
-    sh "rm -rf ./*"
-    git branch: "$jenkins_branch", url: "$jenkins_repo"
-    sh "mkdir -p $tmp_path"
-    writeFile file: "$hosts_deploy", text: "$string_hosts_deploy"
+
+    sh "mkdir -p $test"
+    dir("./$test"){
+      sh "rm -rf $tmp_path"
+      git branch: "$jenkins_branch", credentialsId: "$jenkins_credentials", url: "$jenkins_repo"
+      sh "mkdir -p $tmp_path"
+      writeFile file: "$hosts_deploy", text: "$string_hosts_deploy"
+    }
   }
 
   stage("STAGE X - Destroy"){
-    ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_deploy", playbook: "$deploy_path/conf/destroy.yaml"
+    dir("./$test"){
+      ansiblePlaybook credentialsId: "$credentials", disableHostKeyChecking: true, inventory: "$hosts_deploy", playbook: "$deploy_path/conf/destroy.yaml"
+    }
   }
 
 }
